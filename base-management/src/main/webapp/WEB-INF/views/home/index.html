@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>首页 - ${title}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=8,9,10" />
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/themes/${skinName}/base.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/${easyuiSkinName}/easyui.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/icon.css">
+    </head>
+    <body class="easyui-layout" style="visibility:hidden;background-color:#dfe8f6">
+        <div id="loading-mask"></div>
+        <div id="loading"><div class="loading-text"></div></div>
+        <div data-options="region:'north',border:false" style="height:60px;background-color:#99bbeb;overflow:hidden;">
+            <div class="head">
+                <div class="logo">
+                    <a class="title" href="${requestContext.contextPath}"></a>
+                </div>
+                <ul class="tips">
+                    <li class="left"></li>
+                    <li><span>Hi, <a href="javascript:void(0)">admin</a></span></li>
+                    <li class="right"></li>
+                </ul>
+            </div>
+        </div>
+        <div data-options="region:'west',split:true,title:'菜单',marginTop:5,marginRight:0,marginBottom:5,marginLeft:5" style="width:200px;padding:5px;">
+            <ul id="tree" class="easyui-tree-disable" data-options="url:'${requestContext.contextPath}/home/menu',method:'get',cache:false,animate:true">
+            </ul>
+        </div>
+        <div data-options="region:'center',border:false,marginTop:5,marginRight:5,marginBottom:5,marginLeft:5">
+            <div id="tabs" class="easyui-tabs-disable" data-options="fit:true">
+                <div title="欢迎" style="padding:5px; overflow:hidden; position:relative">
+                    <div class="welcome"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tabsMenu" class="easyui-menu-disable" style="width:120px;">
+            <div data-options="name:'close'"><span>关闭</span></div>
+            <div data-options="name:'closeOthers'"><span>关闭其它</span></div>
+            <div data-options="name:'closeAll'"><span>关闭所有</span></div>
+            <div class="menu-sep"></div>
+            <div data-options="name:'refresh'"><span>刷新</span></div>
+        </div>
+
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-${jqueryVersion}.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/locale/easyui-lang-zh_CN.min.js"></script>
+        <!-- <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-domain.js"></script> -->
+
+        <script type="text/javascript">
+            var tabs = $('#tabs');
+            var tabsMenu = $('#tabsMenu');
+            var tree = $('#tree');
+            
+            function showMask() {
+                $("#loading-mask").hide().show();
+                $("#loading").hide().show();
+            }
+            
+            function hideMask() {
+                window.setTimeout(function() {
+                    $("#loading-mask").fadeOut("fast", function() {});
+                    $("#loading").hide();
+                }, 400);
+            }
+            
+            function addTab(id, title, url, closable) {
+                if (tabs.tabs('exists', title)) {
+                    tabs.tabs('select', title);
+                }
+                else {
+                    showMask();
+                    url = url + (url.indexOf("?") == -1 ? "?" : "&") + "_tabtitle_=" + encodeURIComponent(title);
+                    tabs.tabs('add', {
+                        id: id,
+                        title: title,//id="' + title + '" 
+                        content: '<iframe scrolling="no" name="' + encodeURIComponent(title) + '" frameborder="0" src="' + url + '" style="width:100%;height:100%;"></iframe>',
+                        closable: closable != false,
+                        selected: true,
+                        overflow: 'hidden',
+                        tools:[{
+                                iconCls:'icon-mini-refresh',
+                                handler:function(){
+                                    refreshTab(title);
+                                }
+                            }]
+                    });
+                }
+            }
+            
+            function refreshTab(title) {
+                var ifr;
+                if(!title) {//this is selected tab
+                    ifr = $('iframe[name="' + encodeURIComponent(tabs.tabs('getSelected').panel('options').title) + '"]')[0];
+                }
+                else if(typeof(title) === 'string') {
+                    ifr = $('iframe[name="' + encodeURIComponent(title) + '"]')[0];
+                }
+                else if(typeof(title) === 'object') {//this is a tab object
+                    ifr = $('iframe[name="' + encodeURIComponent(title.panel('options').title) + '"]')[0];
+                }
+                if(ifr) {
+                    ifr.contentWindow.location.reload();
+                }
+            }
+            
+            function closeTab(title) {
+                var tab;
+                if(!title) {//this is selected tab
+                    tab = tabs.tabs('getSelected');
+                }
+                else if(typeof(title) === 'string') {
+                    tab = tabs.tabs('getTab', title);
+                }
+                else if(typeof(title) === 'object') {//this is a tab object
+                    tab = title;
+                }
+                if(tab) {
+                    var opts = tab.panel('options');
+                    if(opts.closable) {
+                        tabs.tabs('close', opts.title);
+                    }
+                }
+            }
+            
+            $(function(){
+                $.parser.parse();
+                tabs.tabs({
+                    onSelect: function(title) {
+                        var id = tabs.tabs('getTab', title).panel('options').id;
+                        if(id != null) {
+                            var node = tree.tree('find', id);
+                            if(node) {
+	                            tree.tree('select', node.target);
+                            }
+                        }
+                    },
+                    onBeforeClose : function(title, index){
+                        var ifr = $('iframe[name="' + encodeURIComponent(title) + '"]')[0];
+                        var win = ifr.contentWindow;
+                        if(win.beforeClose) {
+                            return win.beforeClose();
+                        }
+                        return true;
+                    },
+                    onContextMenu: function(e, title, index) {
+                        e.preventDefault();
+                        tabs.tabs('select', title);
+                        tabsMenu.menu('show', {
+                            left: e.pageX,
+                            top: e.pageY
+                        });
+                    }
+                });
+                
+                tabsMenu.menu({
+                    onShow: function() {
+                		
+                    },
+                    onHide: function() {
+                		
+                    },
+                    onClick: function(item) {
+                        var menu = $.trim(item.name || '');
+                        switch(menu) {
+                            case 'close':
+                                closeTab();
+                                break;
+                            case 'closeOthers':
+                                var selectedTab = tabs.tabs('getSelected');
+                                for(var i = tabs.tabs('tabs').length - 1; i >= 0; i--) {
+                                    var tab = tabs.tabs('getTab', i);
+                                    if(tab.panel('options').title === selectedTab.panel('options').title) {
+                                        continue;
+                                    }
+                                    closeTab(tab);
+                                }
+                                break;
+                            case 'closeAll':
+                                for(var i = tabs.tabs('tabs').length - 1; i >= 0; i--) {
+                                    var tab = tabs.tabs('getTab', i);
+                                    closeTab(tab);
+                                }
+                                break;
+                            case 'refresh':
+                                refreshTab();
+                                break;
+                        }
+                        //var text = $(item.text).length > 0 ? $(item.text).text() : item.text;
+                    }
+                });
+                //
+                tree.tree({
+                    onClick: function(node) {
+                        var url = node.attributes.url;
+                        if (url){
+                            addTab(node.id, node.text, '${requestContext.contextPath}' + url);
+                        } else {
+                            $(this).tree("toggle", node.target);
+                        }
+                        return false;
+                    }
+                });
+                //
+                $('body').css({ visibility: 'visible' });
+                window.setTimeout(function() {
+                    $("#loading").fadeOut("fast", function() { });
+                    $("#loading-mask").fadeOut("fast", function() { $('#loading-mask').css({ backgroundColor: "#ccc", opacity: 0.4 });});
+                }, 400);
+            });
+        </script>
+    </body>
+</html>

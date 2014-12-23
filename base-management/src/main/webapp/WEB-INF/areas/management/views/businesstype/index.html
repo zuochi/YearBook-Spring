@@ -1,0 +1,92 @@
+<!--
+        * 业务类型管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:24
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>业务类型管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form id="businesstypeQuery" style="margin:0; padding:0" queryFunction="getBusinessTypes">
+            	<span class="property">
+            		<label class="label" for="name">名称：</label>
+            		<input type="text" id="name" name="name" class="input text easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,127]'" autoQuery="false" />	
+            	</span>	
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="businesstypes"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getBusinessTypes() {
+                var f = $('#businesstypeQuery');
+            	if (f.form('validate') == false) {
+            		return false;
+            	}
+                var queryParams = f.domain('collect');
+                $("#btnSearch").linkbutton("disable");
+                var t = $('#businesstypes');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '业务类型',
+                    	url: '${requestContext.contextPath}/management/businesstype/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'name', title: '名称', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'remark', title: '备注', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                            $("#btnSearch").linkbutton("enable");
+                            var box = $('#businesstypeQuery').find(':input[name][value!=""]:visible:last');
+                            if(box.length == 0) {
+                                box = $('#businesstypeQuery').find(':input[name]:visible:first');
+                            }
+                            box.focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        names: [
+	                    ],
+	                    subject: '业务类型'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                var t = $('#businesstypeQuery');
+                //装载表单
+                t.domain('load', {});
+                $("#btnSearch")[0].onclick = getBusinessTypes;
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getBusinessTypes();
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>首页</title>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="../../../../themes/green/base.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/green/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/green/easyui-custom.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/green/icon.css">
+	<script type="text/javascript" src="../../jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../jquery.easyui.min.js"></script>
+</head>
+<body class="easyui-layout">
+	<div data-options="region:'north',border:false" style="height:71px;background-color:#99bbeb;overflow:hidden;">
+		<div class="head">
+			<div class="logo">
+				<a class="logo"></a>
+				<a class="title" href="http://www.baidu.com"></a>
+			</div>
+			<ul class="tips">
+				<li><span class="icon user"></span>欢迎您，<a href="javascript:void(0)">系统管理员</a></li>
+				<li><span class="icon home"></span><a href="javascript:void(0)">首页</a></li>
+				<li><span class="icon help"></span><a href="javascript:void(0)">帮助</a></li>
+				<li><span class="icon logout"></span><a href="javascript:void(0)">退出</a></li>
+				<!--
+				<li class="left"></li>
+				<li><span>Hi, <a href="javascript:void(0)">admin</a></span></li>
+				<li class="right"></li>
+				-->
+			</ul>
+		</div>
+	</div>
+	<div data-options="region:'west',split:true,title:'菜单',bodyCls:'building',marginTop:5,marginRight:0,marginBottom:5,marginLeft:5" style="width:200px;padding:0px;">
+		<div class="easyui-accordion" data-options="fit:true,border:false">
+			<div title="About" data-options="iconCls:'icon-ok'" style="overflow:auto;padding:10px;">
+				<h3 style="color:#0099FF;">Accordion for jQuery</h3>
+				<p>Accordion is a part of easyui framework for jQuery. It lets you define your accordion component on web page more easily.</p>
+			</div>
+			<div title="Help" data-options="iconCls:'icon-help'" style="padding:10px;">
+				<div style="width:300px;height:30px;background-color:#CCFFCC">#CCFFCC</div>
+				<div style="width:300px;height:30px;background-color:palegreen">palegreen</div>
+				<div style="width:300px;height:30px;background-color:lightgreen">lightgreen</div>
+				<div style="width:300px;height:30px;background-color:limegreen">limegreen</div>
+				<div style="width:300px;height:30px;background-color:mediumseagreen">mediumseagreen</div>
+				<div style="width:300px;height:30px;background-color:springgreen">springgreen</div>
+				<div style="width:300px;height:30px;background-color:mediumspringgreen">mediumspringgreen</div>
+				<div style="width:300px;height:30px;background-color:lawngreen">lawngreen</div>
+				<div style="width:300px;height:30px;background-color:greenyellow">greenyellow</div>
+				<div style="width:300px;height:30px;background-color:lime">lime</div>
+				<div style="width:300px;height:30px;background-color:yellowgreen">yellowgreen</div>	
+			</div>
+			<div title="TreeMenu" data-options="iconCls:'icon-search'" style="padding:5px;">
+				<ul class="easyui-tree">
+					<li>
+						<span>My Documents</span>
+						<ul>
+							<li data-options="state:'closed'">
+								<span>Photos</span>
+								<ul>
+									<li>
+										<span>Friend</span>
+									</li>
+									<li>
+										<span>Wife</span>
+									</li>
+									<li>
+										<span>Company</span>
+									</li>
+								</ul>
+							</li>
+							<li>
+								<span>Program Files</span>
+								<ul>
+									<li>Intel</li>
+									<li>Java</li>
+									<li>Microsoft Office</li>
+									<li>Games</li>
+								</ul>
+							</li>
+							<li>index.html</li>
+							<li>about.html</li>
+							<li>welcome.html</li>
+						</ul>
+					</li>
+				</ul> 
+			</div>
+		</div>
+		
+	</div>
+	<div data-options="region:'center',border:false,marginTop:5,marginRight:5,marginBottom:5,marginLeft:5">
+		<div id="tabs" class="easyui-tabs" data-options="fit:true">
+			<div title="欢迎" style="padding:5px; overflow:hidden; position:relative">
+				<div class="welcome"></div>
+			</div>
+			<div title="静止" style="padding:0px; overflow:hidden; position:relative">
+				<div class="easyui-layout"  data-options="fit:true">
+					<div data-options="region:'north',border:true,split:true" style="border-width:0 0 1px 0;padding:0px; height:38px; width:auto;">
+						<form id="employeeQuery" style="margin:0; padding:0" queryFunction="getEmployees">
+							<span class="property">
+								<label class="label" for="name">姓名：</label>
+								<input type="text" id="name" name="name" class="input text easyui-validatebox" style="width:94px" data-options="validType:['text','length[0,20]']" autoQuery="enter" />	
+							</span>
+							<span class="property">
+								<label class="label" for="birthday1">生日：</label>
+								<input type="text" id="birthday1" name="birthday" class="input date easyui-datebox" style="width:94px" data-options="validType:['date'],editable:false" autoQuery="enter" />
+							</span>
+							<span class="property">
+								<label class="label" for="birthday2">至</label>
+								<input type="text" id="birthday2" name="birthday" class="input date easyui-datebox" style="width:94px" data-options="validType:['date']" autoQuery="enter" />
+							</span> 
+							<span class="property">
+								<label class="label" for="status">状态：</label>
+								<select id="status" name="status" class="input number easyui-combobox" style="width:100px" data-options="validType:['text','length[0,20]'],panelHeight:100,editable:true,match:true,multiple:false" autoQuery="enter">
+									<option value=""></option>
+									<option value="1">启用</option>	
+									<option value="2">停用</option>	
+									<option value="3">审核</option>	
+								</select>
+							</span>
+							<span class="property">
+								<label class="label" for="organization">组织：</label>
+								<input id="organization" name="organization" class="input number easyui-combotree" style="width:100px" data-options="validType:['text','length[0,20]'],panelHeight:100,editable:false,match:true,multiple:true,cascadeCheck:false,url:'',method:'get',cache:false" autoQuery="enter" />
+							</span>	
+							<span class="property">
+								<label class="label" for="dept">部门：</label>
+								<input id="dept" name="dept" class="input number easyui-combobox" style="width:100px" data-options="validType:['text','length[0,20]'],panelHeight:100,editable:false,match:true,multiple:true,url:'',method:'get',cache:false,valueField:'id',textField:'name'" trigger="organization" autoQuery="enter" />
+							</span>
+							<a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false" accessKey="Q">查询</a>
+							<!--
+							<a href="javascript:void(0)" id="btnSearch1" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:true" accessKey="Q">查询</a>
+							<a href="javascript:void(0)" id="btnSearch2" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true,disabled:false" accessKey="Q">查询</a>
+							-->
+						</form>
+					</div>
+					<div data-options="region:'center',border:false" style="padding:0px;">
+						<table class="easyui-datagrid"
+							data-options="url:'datagrid_data1.json',singleSelect:true,fit:true,fitColumns:true,striped:true,border:false,rownumbers:true,pagination:true,toolbar:toolbar">
+							<thead>
+								<tr>
+									<th data-options="field:'itemid'" width="80">Item ID</th>
+									<th data-options="field:'productid'" width="100">Product ID</th>
+									<th data-options="field:'listprice',align:'right'" width="80">List Price</th>
+									<th data-options="field:'unitcost',align:'right'" width="80">Unit Cost</th>
+									<th data-options="field:'attr1'" width="150">Attribute</th>
+									<th data-options="field:'status',align:'center'" width="50">Status</th>
+								</tr>
+							</thead>
+						</table>
+					</div>
+				</div>
+				
+			</div>
+			<div title="百度网易" style="padding:5px; overflow:hidden; position:relative">
+				<iframe scrolling="no" frameborder="0" src="http://www.baidu.com" style="width:100%;height:100%;"></iframe>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var toolbar = [{
+			text:'Add',
+			iconCls:'icon-add',
+			handler:function(){alert('add')}
+		},{
+			text:'Edit',
+			iconCls:'icon-edit',
+			handler:function(){alert('edit')}
+		},{
+			text:'Delete',
+			iconCls:'icon-remove',
+			handler:function(){alert('delete')}
+		},'-',{
+			text:'Save',
+			iconCls:'icon-save',
+			handler:function(){alert('save')}
+		},{
+			text:'Add',
+			iconCls:'icon-add',
+			handler:function(){alert('add')},
+			disabled: true
+		}];
+	</script>
+</body>
+</html>

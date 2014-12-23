@@ -1,0 +1,167 @@
+<!--
+        * 日志管理页面
+        * 
+        * @作者 admin
+        * @创建时间 2012-11-05 15:24:34
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>用户日志管理 - ${title}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="${ieVersion}" />
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/themes/${skinName}/base.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/${easyuiSkinName}/easyui.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/icon.css">
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form class="query" style="margin:0; padding:0;" autoTypeset="false" >
+                <span class="property">
+                    <label class="label" for="from">开始时间：</label>
+                    <input id="from" name="from" type="text" class="input easyui-datetimebox" style="width:100px" validType="datetime[1,11]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="to">结束时间：</label>
+                    <input id="to" name="to" type="text" class="input easyui-datetimebox" style="width:100px" validType="datetime[1,11]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="who">用户：</label>
+                    <input id="who" name="who" type="text" class="input easyui-validatebox" style="width:100px" validType="text[1,127]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="success">状态：</label>
+                    <select id="success" name="success" class="input easyui-combobox" style="width:100px" data-options="panelHeight:100,editable:false" validType="text" >
+                        <option value="-1"></option>
+                        <option value="1">成功</option>
+                        <option value="0">失败</option>
+                    </select> 
+                </span>
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table class="datagrid"></table>
+        </div>
+
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-${jqueryVersion}.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/datagrid-detailview.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/locale/easyui-lang-zh_CN.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-domain.js"></script>
+        <script type="text/javascript">
+            function getQueryParams() {
+                var queryParams = $('form.query').domain('collect');
+                if(queryParams == false) {
+                    return false;
+                }
+                queryParams.category = 1; 
+                $("#btnSearch").linkbutton("disable");
+                var total = $('table.datagrid').domain('count', {
+                    url: '${requestContext.contextPath}/management/log/count',
+                    queryParams:queryParams
+                });
+                $("#btnSearch").linkbutton("enable");
+                queryParams.total = total;
+               
+                return queryParams;
+            }
+            function datagrid() {
+                var queryParams = getQueryParams();
+                if(queryParams == false) {
+                    return;
+                }
+                $("#btnSearch").linkbutton("disable");
+                var t = $('table.datagrid');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                    t.domain('datagrid', {
+                        title: '用户日志',
+                        url: '${requestContext.contextPath}/management/log/page',
+                        queryParams: queryParams,     
+                        sortName : "when",
+                        sortOrder : "desc",
+                        toolbar : "",
+                        frozenColumns : "",
+                        singleSelect : true,
+                        columns: [[
+                                {field: 'id', title: '标识', width: 100, sortable: true, align: 'left', hidden:true},
+                                {field: 'success', title: '状态', width: 50, sortable: true, align: 'left', formatter:formatSuccess, styler:styleSuccess},
+                                {field: 'when', title: '时间', width: 150, sortable: true, align: 'left'},
+                                {field: 'who', title: '用户', width: 100, sortable: true, align: 'left'},
+                                {field: 'source', title: '来源IP', width: 100, sortable: true, align: 'left'},
+                                {field: 'what', title: '事件', width: 200, sortable: true, align: 'left'}
+                            ]],
+                        onLoadSuccess: function() {
+                            $("#btnSearch").linkbutton("enable");
+                            $('form.query').find(':input[name]:visible:first,:input[name][value!=""]:visible:last').focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        view: detailview,  
+                        detailFormatter: function(index, row){ 
+                            var html = new Array();
+                            html.push("<ul style=\"padding-left:0px\">");
+                            html.push("<li>访问地址：" + row.url + "</li>");
+                            html.push("<li>事件：" + row.what + "</li>");
+                            if (row.success == 1){
+                                 html.push("<li>信息：" + row.message + "</li>");
+                            }
+                            html.push("<li>参数：" + row.parameter + "</li>");
+                            if (row.success == 0){
+                                html.push("<li>信息：" + row.message + "</li>");
+                                html.push("<li>堆栈信息：<br />" + row.trace + "</li>");
+                            }else{
+                                html.push("<li><div>返回结果：" + row.result + "</div></li>");
+                            }
+                            html.push("</ul>");
+                            return html.join('<br />');
+                        }
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+                
+                function formatSuccess(value,row,index){
+                    if (value == 1){
+                        return "成功";
+                    }else if (value == 0){
+                        return "失败";
+                    }else{
+                        return value;
+                    }
+                }
+                
+                function styleSuccess(value, row, index){
+                    if (value == 1){
+                        return "color:green;font-weight:bold";
+                    }else if (value == 0){
+                        return "color:red;font-weight:bold";
+                    } else{
+                        return "";
+                    }
+                }
+            }
+			
+            $(function(){
+                var form = $('form.query');
+                //解析页面
+                $.parser.parse();
+                form.domain('initForm', datagrid);
+                $("#btnSearch")[0].onclick = datagrid;
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) datagrid();
+            });
+        </script>
+    </body>
+</html>

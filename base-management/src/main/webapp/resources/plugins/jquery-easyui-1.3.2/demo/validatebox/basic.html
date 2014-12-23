@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Basic ValidateBox - jQuery EasyUI Demo</title>
+	<link rel="stylesheet" type="text/css" href="../../themes/default/easyui.css">
+	<link rel="stylesheet" type="text/css" href="../../themes/icon.css">
+	<link rel="stylesheet" type="text/css" href="../demo.css">
+	<script type="text/javascript" src="../../jquery-1.8.0.min.js"></script>
+	<script type="text/javascript" src="../../jquery.easyui.min.js"></script>
+</head>
+<body>
+	<h2>Basic ValidateBox</h2>
+	<div class="demo-info">
+		<div class="demo-tip icon-tip"></div>
+		<div>It's easy to add validate logic to a input box.</div>
+	</div>
+	<div style="margin:10px 0;"></div>
+	<div class="easyui-panel" title="Register" style="width:400px;padding:10px">
+		<table>
+			<tr>
+				<td>Birthday:</td>
+				<td>
+					<input class="easyui-datetimebox" data-options="required:true,editable:true,disabled:false" style="width:150px">
+					<input name="birthday" class="easyui-datebox" data-options="required:true,editable:true,disabled:false">
+					
+				</td>
+			</tr>
+			<tr>
+				<td>User Name:</td>
+				<td><input name="username" class="easyui-validatebox" data-options="required:true,validType:'length[3,10]',tipPosition:'top'"></td>
+			</tr>
+			<tr>
+				<td>Email:</td>
+				<td><input name="email" class="easyui-validatebox" data-options="required:true,validType:'email',tipPosition:'bottom'"></td>
+			</tr>
+			
+			<tr>
+				<td>URL:</td>
+				<td><input name="url" class="easyui-validatebox" data-options="required:true,validType:'url',tipPosition:'right'"></td>
+			</tr>
+			<tr>
+				<td>Phone:</td>
+				<td><input name="phone" class="easyui-validatebox" data-options="required:true,tipPosition:'left'"></td>
+			</tr>
+			<tr>
+				<td>Sex:</td>
+				<td>
+					<select name="sex" class="easyui-combobox" data-options="required:true">
+						<option value=""></option>
+						<option value="1">man</option>
+						<option value="2">woman</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<td>Pos:</td>
+				<td>
+					<input name="pos" class="easyui-numberspinner" style="width:80px;" data-options="required:true"></input>
+				</td>
+			</tr>
+			
+		</table>
+	</div>
+
+</body>
+</html>

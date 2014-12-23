@@ -26,9 +26,9 @@ import com.school.yearbook.domain.management.Advice;
 import com.school.yearbook.service.face.management.IAdviceService;
 
 /**
- * T_ACCOUNT(帐户) 控制器
+ * ADVICE(建议) 控制器
  *
- * @作者 陈开敏
+ * @作者 Gilbert
  * @创建时间 2014-05-23 10:04:07
  */
 @Controller("fonts.accountController")

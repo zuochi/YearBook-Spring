@@ -1,0 +1,98 @@
+<!--
+        * 银行帐户管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:47:26
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>银行帐户管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form id="bankaccountQuery" style="margin:0; padding:0" queryFunction="getBankAccounts">
+            	<span class="property">
+            		<label class="label" for="merchantId">商户编号：</label>
+            		<input type="text" id="merchantId" name="merchantId" class="input number easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,11]'" autoQuery="false" />	
+            	</span>	
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="bankaccounts"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getBankAccounts() {
+                var f = $('#bankaccountQuery');
+            	if (f.form('validate') == false) {
+            		return false;
+            	}
+                var queryParams = f.domain('collect');
+                $("#btnSearch").linkbutton("disable");
+                var t = $('#bankaccounts');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '银行帐户',
+                    	url: '${requestContext.contextPath}/management/bankaccount/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'bank', title: '开户行', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'branch', title: '分行', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'province', title: '省份', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'city', title: '城市', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'name', title: '开户名称', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'account', title: '账号', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'remark', title: '备注', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'merchantId', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                            $("#btnSearch").linkbutton("enable");
+                            var box = $('#bankaccountQuery').find(':input[name][value!=""]:visible:last');
+                            if(box.length == 0) {
+                                box = $('#bankaccountQuery').find(':input[name]:visible:first');
+                            }
+                            box.focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        names: [
+	                    ],
+	                    subject: '银行帐户'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                var t = $('#bankaccountQuery');
+                //装载表单
+                t.domain('load', {});
+                $("#btnSearch")[0].onclick = getBankAccounts;
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getBankAccounts();
+            });
+        </script>
+    </body>
+</html>

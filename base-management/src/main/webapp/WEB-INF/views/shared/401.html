@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>未登录 - ${title}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="${ieVersion}" />
+    </head>
+    <body>
+        <div style="font-size:12px; line-height:1.5">
+            <b>未登录。</b>
+            <br/><br/>
+            <b>说明：</b>HTTP 401。很抱歉，您尚未登录，或者会话已失效。<label id="timeout" style="color:red"></label> 秒钟之后，将自动跳转到登录页面。
+        </div>
+        <script type="text/javascript">
+            if (top.hideMask) top.hideMask();
+                
+            var timeout = 4;
+            var delay = 1;
+            var tips = document.getElementById('timeout');
+            if (tips) {
+                tips.innerHTML = timeout;
+                var interval = window.setInterval(function() {
+                    timeout -= delay;
+                    if (timeout == 0) {
+                        window.clearInterval(interval);
+                        top.location = '${requestContext.contextPath}/';
+                    }
+                    else {
+                        tips = document.getElementById('timeout');
+                        if (tips) {
+                            tips.innerHTML = timeout;
+                        }
+                    }
+                }, delay * 1000);
+            }
+        </script>
+    </body>
+</html>

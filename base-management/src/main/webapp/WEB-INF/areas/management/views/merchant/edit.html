@@ -1,0 +1,133 @@
+<!--
+        * 商户新建页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:38
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>编辑商户 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <form id="merchant" style="margin:10px; padding:0; visibility:hidden" method="post" autoTypeset="true" columnSize="2">
+                <input type="hidden" id="id" name="id" />
+	            <span class="property">
+            		<label class="label block" for="name">商户名称</label>
+            		<input type="text" id="name" name="name" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" focused="true" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="domain">域名</label>
+            		<input type="text" id="domain" name="domain" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="province">所在省份</label>
+            		<select id="province" name="province" class="input text easyui-combobox-disable" style="" data-options="validType:'text[1,127]',panelHeight:100,editable:false">
+            		</select>
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="city">所在城市</label>
+            		<select id="city" name="city" class="input text easyui-combobox-disable" style="" data-options="validType:'text[1,127]',panelHeight:100,editable:false">
+            		</select>
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="industry">所属行业</label>
+            		<select id="industry" name="industry" class="input text easyui-combobox-disable" style="" data-options="validType:'text[1,127]',panelHeight:100,editable:false">
+            		</select>
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="address">地址</label>
+            		<input type="text" id="address" name="address" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="zipCode">邮编</label>
+            		<input type="text" id="zipCode" name="zipCode" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="contact">联系人</label>
+            		<input type="text" id="contact" name="contact" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="email">EMAIL</label>
+            		<input type="text" id="email" name="email" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="telephone">电话</label>
+            		<input type="text" id="telephone" name="telephone" class="input text easyui-validatebox-disable" style="" data-options="validType:'telephone[1,127][1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="fax">传真</label>
+            		<input type="text" id="fax" name="fax" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="registerTime">注册时间</label>
+            		<input type="text" id="registerTime" name="registerTime" class="input date easyui-validatebox-disable" style="" data-options="validType:'text[0,999999999]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="version">版本</label>
+            		<input type="text" id="version" name="version" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+            </form>
+        </div>
+        <div data-options="region:'south',border:false" style="height:35px;text-align:right; padding:5px 5px 0 0;background-color:#efefef;">
+            <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">保存</a>
+            <a id="btnClose" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">关闭</a>
+        </div>
+        <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            $(function(){
+            	//解析页面
+                $.parser.parse();
+                var id = $.query.getId();
+                $('body').css({ visibility: 'visible' });
+                var t = $('#merchant');
+                t.domain('load', {
+                    url: '${requestContext.contextPath}/management/merchant/load/' + id,
+                    names: [
+                    ],
+                    onLoadSuccess: function(data, status, XHR) {
+                        $('#btnSave').linkbutton('enable')[0].onclick = function() { save(); };
+                    },
+                    onLoadComplete: function() {
+                        $('#btnClose').linkbutton('enable')[0].onclick = function() { $(parent).domain('closeDialog'); }
+                    }
+                });
+                
+                function save() {
+                	if (t.form('validate') == false) {
+                		return false;
+                	}
+                    var data = t.domain('collect');
+                    $('#btnSave,#btnClose').linkbutton('disable');
+                    t.domain('edit', {
+                        title: '商户',
+                        url: '${requestContext.contextPath}/management/merchant/edit/' + id,
+                        data: data,
+                        onBeforeLoad: function(XHR) {
+                        },
+                        onLoadSuccess: function(data, status, XHR) {
+                        	$('#btnSave,#btnClose').linkbutton('enable');
+                            if (window.parent != window.self) {
+                                var win = window.parent;
+                                if (win.$('#tabs').length == 1) {
+                                    win = win.$('#tabs').tabs('getSelected').panel('body').find('iframe')[0].contentWindow;
+                                }
+                                if (win) {
+                                	var t = win.$('#merchants');
+                                    t.datagrid('updateRow', { index: t.datagrid('getRowIndex', id), row: data });
+                                }
+                            }
+                            $(parent).domain('closeDialog');
+                        },
+                        onLoadError: function(XHR, statusText, errorThrow) {
+                        	$('#btnSave,#btnClose').linkbutton('enable');
+                        }
+                    });
+                }
+            });
+    	</script>
+	</body>
+</html>

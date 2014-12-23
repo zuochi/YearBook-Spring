@@ -1,0 +1,155 @@
+<!--
+        * 订单新建页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:42
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>新建订单 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <form id="order" style="margin:10px; padding:0; visibility:hidden" method="post" autoTypeset="true" columnSize="2">
+                <input type="hidden" id="id" name="id" />
+	            <span class="property">
+            		<label class="label block" for="orderNo">订单号码</label>
+            		<input type="text" id="orderNo" name="orderNo" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" focused="true" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="businessId">业务ID</label>
+            		<input type="text" id="businessId" name="businessId" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="amount">订单金额</label>
+            		<input type="text" id="amount" name="amount" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,10]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="currency">币种</label>
+            		<input type="text" id="currency" name="currency" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="createdTime">创建日期</label>
+            		<input type="text" id="createdTime" name="createdTime" class="input date easyui-validatebox-disable" style="" data-options="validType:'text[0,999999999]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="paidManner">支付方式</label>
+            		<input type="text" id="paidManner" name="paidManner" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="orderType">订单类型</label>
+            		<input type="text" id="orderType" name="orderType" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="payStatus">支付状态</label>
+            		<input type="text" id="payStatus" name="payStatus" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="settlementStatus">清算状态</label>
+            		<input type="text" id="settlementStatus" name="settlementStatus" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="processStatus">处理状态</label>
+            		<input type="text" id="processStatus" name="processStatus" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="version">版本</label>
+            		<input type="text" id="version" name="version" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="merchantId">商户编号</label>
+            		<input type="text" id="merchantId" name="merchantId" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="mctOrderNo">商户订单号码</label>
+            		<input type="text" id="mctOrderNo" name="mctOrderNo" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="remark">备注</label>
+            		<input type="text" id="remark" name="remark" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="channelId">通道ID</label>
+            		<input type="text" id="channelId" name="channelId" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="paidTime">支付时间</label>
+            		<input type="text" id="paidTime" name="paidTime" class="input date easyui-validatebox-disable" style="" data-options="validType:'text[0,999999999]'" />	
+            	</span>
+            </form>
+        </div>
+        <div data-options="region:'south',border:false" style="height:35px;text-align:right; padding:5px 5px 0 0;background-color:#efefef;">
+            <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">保存</a>
+            <a id="btnAppend" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">保存并新建</a>
+            <a id="btnClose" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">关闭</a>
+        </div>
+        <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            $(function(){
+                //解析页面
+                $.parser.parse();
+                $('body').css({ visibility: 'visible' });
+                var t = $('#order');
+                t.domain('load', {
+                    url: '${requestContext.contextPath}/management/order/load/-1',
+                    onLoadSuccess: function(data, status, XHR) {
+                        $('#btnSave')[0].onclick = function() { save('save'); }
+                        $('#btnAppend')[0].onclick = function() { save('append'); }
+                        $('#btnSave,#btnAppend').linkbutton('enable');
+                    },
+                    onLoadComplete: function() {
+                        $('#btnClose').linkbutton('enable')[0].onclick = function() { $(parent).domain('closeDialog'); }
+                    }
+                });
+                
+                function save(action) {
+                	if (t.form('validate') == false) {
+                		return false;
+                	}
+                    var data = t.domain('collect');
+                    $('#btnSave,#btnAppend,#btnClose').linkbutton('disable');
+                    t.domain('create', {
+                        title : '订单',
+                        url: '${requestContext.contextPath}/management/order/create',
+                        data: data,
+                        onBeforeLoad: function(XHR) {
+                        },
+                        onLoadSuccess: function(data, status, XHR) {
+                            $('#btnSave,#btnAppend,#btnClose').linkbutton('enable');
+                            if (action == 'save') {
+                                $(parent).domain('closeDialog');
+                            }
+                            else if (action == 'append') {
+                                var defaults = $.extend({}, data, {
+					                orderNo: "" 	
+					                ,businessId: -1	
+					                ,amount: 0.00	
+					                ,currency: ""	
+					                ,createdTime: 	
+					                ,paidManner: ""	
+					                ,orderType: -1	
+					                ,payStatus: -1	
+					                ,settlementStatus: -1	
+					                ,processStatus: -1	
+					                ,version: -1	
+					                ,merchantId: -1	
+					                ,mctOrderNo: "" 	
+					                ,remark: ""	
+					                ,channelId: -1	
+					                ,paidTime: 	
+                                });
+                                t.domain('load', defaults);
+                            }
+                        },
+                        onLoadError: function(XHR, statusText, errorThrow) {
+                        	$('#btnSave,#btnAppend,#btnClose').linkbutton('enable');
+                        }
+                    });
+                }
+            });
+        </script>
+    </body>
+</html>

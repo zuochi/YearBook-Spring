@@ -1,0 +1,85 @@
+<!--
+        * 通道管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:27
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>通道管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="channels"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getChannels() {
+                var queryParams = {};
+                var t = $('#channels');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '通道',
+                    	url: '${requestContext.contextPath}/management/channel/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'name', title: '通道名称', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'bizTypeId', title: '业务类型ID', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'feeRate', title: '费率', width: 100, sortable: true, align: 'right', hidden: false, formatter: function(value) { return $.modifiers.formatNumber(value, 2); }}
+	                    	,{field: 'remark', title: '备注', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'status', title: '状态', width: 100, sortable: true, align: 'left', hidden: false, formatter: formatStatus}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                        },
+                        names: [
+	                    ],
+	                    subject: '通道'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+							
+			function formatStatus(value, row, index, text) {
+        		if(text && text != value) {
+					return text;
+				}
+        		text = value;
+                var items = [{"value":0,"text":"无效"},{"value":1,"text":"有效"}];
+                for(var i = 0; i < items.length; i++) {
+                    if(items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+        	}				
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getChannels();
+            });
+        </script>
+    </body>
+</html>

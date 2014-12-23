@@ -1,0 +1,102 @@
+<!--
+        * 商户管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:38
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>商户管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form id="merchantQuery" style="margin:0; padding:0" queryFunction="getMerchants">
+            	<span class="property">
+            		<label class="label" for="name">商户名称：</label>
+            		<input type="text" id="name" name="name" class="input text easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,127]'" autoQuery="false" />	
+            	</span>	
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="merchants"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getMerchants() {
+                var f = $('#merchantQuery');
+            	if (f.form('validate') == false) {
+            		return false;
+            	}
+                var queryParams = f.domain('collect');
+                $("#btnSearch").linkbutton("disable");
+                var t = $('#merchants');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '商户',
+                    	url: '${requestContext.contextPath}/management/merchant/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'name', title: '商户名称', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'domain', title: '域名', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'province', title: '所在省份', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'city', title: '所在城市', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'industry', title: '所属行业', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'address', title: '地址', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'zipCode', title: '邮编', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'contact', title: '联系人', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'email', title: 'EMAIL', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'telephone', title: '电话', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'fax', title: '传真', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'registerTime', title: '注册时间', width: 100, sortable: true, align: 'left', hidden: false, formatter: function(value) { return $.modifiers.formatDatetime(value, 'yyyy-MM-dd'); }}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                            $("#btnSearch").linkbutton("enable");
+                            var box = $('#merchantQuery').find(':input[name][value!=""]:visible:last');
+                            if(box.length == 0) {
+                                box = $('#merchantQuery').find(':input[name]:visible:first');
+                            }
+                            box.focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        names: [
+	                    ],
+	                    subject: '商户'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                var t = $('#merchantQuery');
+                //装载表单
+                t.domain('load', {});
+                $("#btnSearch")[0].onclick = getMerchants;
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getMerchants();
+            });
+        </script>
+    </body>
+</html>

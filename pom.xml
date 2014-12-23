@@ -244,6 +244,7 @@
         <module>base-dao</module>
         <module>base-service</module>
         <module>base-fonts</module>
+        <module>base-management</module>
     </modules>
 
     <build>
@@ -305,6 +306,8 @@
                             <relativePath>yearbook-service/target/class</relativePath>
                             <relativePath>yearbook-fonts/target/class</relativePath>
                             <relativePath>yearbook-fonts/src/main/webapp</relativePath>
+                            <relativePath>yearbook-management/target/class</relativePath>
+                            <relativePath>yearbook-management/src/main/webapp</relativePath>
                             <addResourcesDirToRebelXml>false</addResourcesDirToRebelXml>
                             <alwaysGenerate>true</alwaysGenerate>
                         </configuration>

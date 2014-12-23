@@ -1,0 +1,69 @@
+<!--
+        * 密钥管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:34
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>密钥管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="keys"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getKeys() {
+                var queryParams = {};
+                var t = $('#keys');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '密钥',
+                    	url: '${requestContext.contextPath}/management/key/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'md5', title: 'MD5私钥', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'des', title: 'DES私钥', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'remark', title: '备注', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'merchantId', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                        },
+                        names: [
+	                    ],
+	                    subject: '密钥'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getKeys();
+            });
+        </script>
+    </body>
+</html>

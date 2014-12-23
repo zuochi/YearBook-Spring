@@ -1,0 +1,181 @@
+<!--
+        * 审计管理页面
+        * 
+        * @作者 admin
+        * @创建时间 2012-11-07 11:31:06
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>审计管理 - ${title}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="${ieVersion}" />
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/themes/${skinName}/base.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/${easyuiSkinName}/easyui.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/icon.css">
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask)
+                top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form class="query" style="margin:0; padding:0" autoTypeset="false" >
+                <span class="property">
+                    <label class="label" for="when_from">开始时间：</label>
+                    <input id="when_from" name="when_from" type="text" class="input easyui-datebox" style="width:100px" validType="datetime[1,11]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="when_to">结束时间：</label>
+                    <input id="when_to" name="when_to" type="text" class="input easyui-datebox" style="width:100px" validType="datetime[1,11]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="who">修改者：</label>
+                    <input id="who" name="who" type="text" class="input easyui-validatebox" style="width:100px" validType="text[1,11]" />
+                </span>
+                <span class="property">
+                    <label class="label" for="variable_value_">关键字：</label>
+                    <input id="variable_value_" name="variable_value_" type="text" class="input easyui-validatebox" style="width:100px" validType="text[1,127]" />
+                </span>
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table class="datagrid"></table>
+        </div>
+
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-${jqueryVersion}.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/datagrid-detailview.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/locale/easyui-lang-zh_CN.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-domain.js"></script>
+
+        <script type="text/javascript">
+            function getQueryParams() {
+                var queryParams = $('form.query').domain('collect');
+                if (queryParams == false) {
+                    return false;
+                }
+                return queryParams;
+            }
+
+            function formatOperation(value, row, index) {
+                var text = value;
+                var items = [{"text": "新建", "value": "A"}, {"text": "修改", "value": "M"}, {"text": "删除", "value": "D"}];
+                for (var i = 0; i < items.length; i++) {
+                    if (items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+            }
+
+            function styleOperation(value, row, index) {
+                if (value == 'A') {
+                    return "color:green;font-weight:bold";
+                } else if (value === 'M') {
+                    return "color:orange;font-weight:bold";
+                } else if (value == 'D') {
+                    return "color:red;font-weight:bold";
+                } else {
+                    return value;
+                }
+            }
+
+            function datagrid() {
+                var queryParams = getQueryParams();
+                if (queryParams == false) {
+                    return;
+                }
+                $("#btnSearch").linkbutton("disable");
+                var t = $('table.datagrid');
+                if (typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                    t.domain('datagrid', {
+                        title: '审计',
+                        url: '${requestContext.contextPath}/management/audit/page',
+                        queryParams: queryParams,
+                        sortName: "when",
+                        sortOrder: "desc",
+                        toolbar: "",
+                        frozenColumns: "",
+                        singleSelect : true,
+                        columns: [[
+                                {field: 'id', title: '标识', width: 100, sortable: true, align: 'left', hidden: true},
+                                {field: 'when', title: '时间', width: 150, sortable: true, align: 'left'},
+                                {field: 'operation', title: '操作', width: 50, sortable: true, align: 'left', formatter: formatOperation, styler: styleOperation},
+                                {field: 'who', title: '修改者', width: 80, sortable: true, align: 'left'},
+                                {field: 'tbl', title: '表名', width: 150, sortable: true, align: 'left'},
+                                {field: 'key', title: '键值', width: 100, sortable: true, align: 'left'}
+                            ]],
+                        view: detailview,
+                        detailFormatter: function(index, row) {
+                            return '<div style="padding:2px"><table id="ddv-' + index + '"></table></div>';
+                        },
+                        onExpandRow: function(index, row) {
+                            $('#ddv-' + index).datagrid({
+                                url: '${requestContext.contextPath}/management/audit/' + row.id + '/variables',
+                                fitColumns: true,
+                                singleSelect: true,
+                                rownumbers: true,
+                                loadMsg: '',
+                                height: 'auto',
+                                columns: [[
+                                        {field: 'fieldDesc', title: '字段', width: 50},
+                                        {field: 'oldValue', title: '原值', width: 100, styler : styleValue},
+                                        {field: 'newValue', title: '新值', width: 100, styler : styleValue}
+                                    ]],
+                                onResize: function() {
+                                    $('table.datagrid').datagrid('fixDetailRowHeight', index);
+                                },
+                                onLoadSuccess: function() {
+                                    setTimeout(function() {
+                                        $('table.datagrid').datagrid('fixDetailRowHeight', index);
+                                    }, 100);
+                                }
+                            });
+                            $('table.datagrid').datagrid('fixDetailRowHeight', index);
+                        },
+                        onLoadSuccess: function() {
+                            $("#btnSearch").linkbutton("enable");
+                            $('form.query').find(':input[name]:visible:first,:input[name][value!=""]:visible:last').focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        }
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+
+            }
+
+            function styleValue(value, row, index) {
+                if (row.newValue != row.oldValue) {
+                    return "color:red;font-weight:plain";
+                }
+            }
+
+
+            $(function() {
+                var form = $('form.query');
+                //解析页面
+                $.parser.parse();
+                form.domain('initForm', datagrid);
+                $("#btnSearch")[0].onclick = datagrid;
+
+                //显示隐藏页面
+                $('body').css({visibility: 'visible'});
+                //移除顶端遮罩
+                if (top.hideMask)
+                    top.hideMask();
+                //加载数据
+                if ($.fn.domain.defaults.datagrid.auto)
+                    datagrid();
+            });
+        </script>
+    </body>
+</html>
