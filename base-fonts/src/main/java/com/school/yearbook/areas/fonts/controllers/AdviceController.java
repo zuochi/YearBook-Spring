@@ -31,7 +31,7 @@ import com.school.yearbook.service.face.management.IAdviceService;
  * @作者 Gilbert
  * @创建时间 2014-05-23 10:04:07
  */
-@Controller("fonts.accountController")
+@Controller("fonts.adviceController")
 @RequestMapping("/fonts/advice")
 public class AdviceController {
 
