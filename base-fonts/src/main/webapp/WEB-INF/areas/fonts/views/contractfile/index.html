@@ -1,0 +1,71 @@
+<!--
+        * 合同文件管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:30
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>合同文件管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="contractfiles"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getContractFiles() {
+                var queryParams = {};
+                var t = $('#contractfiles');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '合同文件',
+                    	url: '${requestContext.contextPath}/management/contractfile/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'name', title: '文件名', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'type', title: '文件类型', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'fileSize', title: '文件大小', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'path', title: '存储路径', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'content', title: '文件内容', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'merchantId', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                        },
+                        names: [
+	                    ],
+	                    subject: '合同文件'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getContractFiles();
+            });
+        </script>
+    </body>
+</html>

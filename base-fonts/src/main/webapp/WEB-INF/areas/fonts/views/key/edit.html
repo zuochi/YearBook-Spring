@@ -1,0 +1,98 @@
+<!--
+        * 密钥新建页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:34
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>编辑密钥 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <form id="key" style="margin:10px; padding:0; visibility:hidden" method="post" autoTypeset="true" columnSize="2">
+                <input type="hidden" id="id" name="id" />
+	            <span class="property">
+            		<label class="label block" for="md5">MD5私钥</label>
+            		<input type="text" id="md5" name="md5" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="des">DES私钥</label>
+            		<input type="text" id="des" name="des" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="remark">备注</label>
+            		<input type="text" id="remark" name="remark" class="input text easyui-validatebox-disable" style="" data-options="validType:'text[1,127]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="version">版本</label>
+            		<input type="text" id="version" name="version" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" />	
+            	</span>
+	            <span class="property">
+            		<label class="label block" for="merchantId">商户编号</label>
+            		<input type="text" id="merchantId" name="merchantId" class="input number easyui-validatebox-disable" style="" data-options="validType:'text[1,11]'" focused="true" />	
+            	</span>
+            </form>
+        </div>
+        <div data-options="region:'south',border:false" style="height:35px;text-align:right; padding:5px 5px 0 0;background-color:#efefef;">
+            <a id="btnSave" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">保存</a>
+            <a id="btnClose" href="javascript:void(0)" class="easyui-linkbutton" data-options="disabled:true">关闭</a>
+        </div>
+        <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            $(function(){
+            	//解析页面
+                $.parser.parse();
+                var id = $.query.getId();
+                $('body').css({ visibility: 'visible' });
+                var t = $('#key');
+                t.domain('load', {
+                    url: '${requestContext.contextPath}/management/key/load/' + id,
+                    names: [
+                    ],
+                    onLoadSuccess: function(data, status, XHR) {
+                        $('#btnSave').linkbutton('enable')[0].onclick = function() { save(); };
+                    },
+                    onLoadComplete: function() {
+                        $('#btnClose').linkbutton('enable')[0].onclick = function() { $(parent).domain('closeDialog'); }
+                    }
+                });
+                
+                function save() {
+                	if (t.form('validate') == false) {
+                		return false;
+                	}
+                    var data = t.domain('collect');
+                    $('#btnSave,#btnClose').linkbutton('disable');
+                    t.domain('edit', {
+                        title: '密钥',
+                        url: '${requestContext.contextPath}/management/key/edit/' + id,
+                        data: data,
+                        onBeforeLoad: function(XHR) {
+                        },
+                        onLoadSuccess: function(data, status, XHR) {
+                        	$('#btnSave,#btnClose').linkbutton('enable');
+                            if (window.parent != window.self) {
+                                var win = window.parent;
+                                if (win.$('#tabs').length == 1) {
+                                    win = win.$('#tabs').tabs('getSelected').panel('body').find('iframe')[0].contentWindow;
+                                }
+                                if (win) {
+                                	var t = win.$('#keys');
+                                    t.datagrid('updateRow', { index: t.datagrid('getRowIndex', id), row: data });
+                                }
+                            }
+                            $(parent).domain('closeDialog');
+                        },
+                        onLoadError: function(XHR, statusText, errorThrow) {
+                        	$('#btnSave,#btnClose').linkbutton('enable');
+                        }
+                    });
+                }
+            });
+    	</script>
+	</body>
+</html>

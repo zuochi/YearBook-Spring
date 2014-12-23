@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--配置审计映射关系-->
+<tables>
+    <!--example-->
+    <!--<table name="T_LOG" domain="com.gz91pay.base.domain.management.Log">
+        <column name="WHEN" field="when" description="时间" />
+        <column name="SOURCE" field="source" description="地点" />
+        <column name="WHO" field="who" description="人物" />
+        <column name="WHAT" field="what" description="事件" />
+    </table>-->
+</tables>

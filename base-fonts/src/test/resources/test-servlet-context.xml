@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context classpath:org/springframework/context/config/spring-context-3.1.xsd
+        http://www.springframework.org/schema/mvc classpath:org/springframework/web/servlet/config/spring-mvc-3.1.xsd
+	http://www.springframework.org/schema/tx classpath:org/springframework/transaction/config/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/aop classpath:org/springframework/aop/config/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/task classpath:org/springframework/scheduling/config/spring-task-3.1.xsd
+        http://www.springframework.org/schema/security classpath:org/springframework/security/config/spring-security-3.1.xsd   
+        http://www.springframework.org/schema/jdbc classpath:org/springframework/jdbc/config/spring-jdbc-3.1.xsd">
+
+    <!--内存数据库配置-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <!--Connection Info-->
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:mem:base" />
+        <property name="username" value="sa" />
+        <property name="password" value="" />
+    </bean>
+</beans>

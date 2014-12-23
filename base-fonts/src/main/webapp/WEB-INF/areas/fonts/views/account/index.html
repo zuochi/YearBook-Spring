@@ -1,0 +1,110 @@
+<!--
+        * 帐户管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:07
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>帐户管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form id="accountQuery" style="margin:0; padding:0" queryFunction="getAccounts">
+            	<span class="property">
+            		<label class="label" for="merchantId">商户编号：</label>
+            		<input type="text" id="merchantId" name="merchantId" class="input number easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,11]'" autoQuery="false" />	
+            	</span>	
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="accounts"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getAccounts() {
+                var f = $('#accountQuery');
+            	if (f.form('validate') == false) {
+            		return false;
+            	}
+                var queryParams = f.domain('collect');
+                $("#btnSearch").linkbutton("disable");
+                var t = $('#accounts');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '帐户',
+                    	url: '${requestContext.contextPath}/management/account/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'amount', title: '总金额', width: 100, sortable: true, align: 'right', hidden: false, formatter: function(value) { return $.modifiers.formatNumber(value, 2); }}
+	                    	,{field: 'availableAmount', title: '可用金额', width: 100, sortable: true, align: 'right', hidden: false, formatter: function(value) { return $.modifiers.formatNumber(value, 2); }}
+	                    	,{field: 'processingAmount', title: '处理中金额', width: 100, sortable: true, align: 'right', hidden: false, formatter: function(value) { return $.modifiers.formatNumber(value, 2); }}
+	                    	,{field: 'type', title: '账户类型', width: 100, sortable: true, align: 'left', hidden: false, formatter: formatType}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'merchantId', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: false}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                            $("#btnSearch").linkbutton("enable");
+                            var box = $('#accountQuery').find(':input[name][value!=""]:visible:last');
+                            if(box.length == 0) {
+                                box = $('#accountQuery').find(':input[name]:visible:first');
+                            }
+                            box.focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        names: [
+	                    ],
+	                    subject: '帐户'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+							
+			function formatType(value, row, index, text) {
+        		if(text && text != value) {
+					return text;
+				}
+        		text = value;
+                var items = [{"value":1,"text":"人民币"},{"value":2,"text":"其它"}];
+                for(var i = 0; i < items.length; i++) {
+                    if(items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+        	}				
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                var t = $('#accountQuery');
+                //装载表单
+                t.domain('load', {});
+                $("#btnSearch")[0].onclick = getAccounts;
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getAccounts();
+            });
+        </script>
+    </body>
+</html>

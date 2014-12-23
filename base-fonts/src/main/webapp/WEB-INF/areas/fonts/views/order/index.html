@@ -1,0 +1,158 @@
+<!--
+        * 订单管理页面
+        * 
+        * @作者 陈开敏
+        * @创建时间 2014-05-23 10:04:42
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>订单管理 - ${title}</title>
+        <#include "/WEB-INF/head/head_css.htm" >
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask) top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'north',border:false,split:true" style="padding:0px; border-bottom:1px solid #99BBE8; height:38px; width:auto;">
+            <form id="orderQuery" style="margin:0; padding:0" queryFunction="getOrders">
+            	<span class="property">
+            		<label class="label" for="orderNo">订单号码：</label>
+            		<input type="text" id="orderNo" name="orderNo" class="input text easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,127]'" autoQuery="false" />	
+            	</span>	
+            	<span class="property">
+            		<label class="label" for="merchantId">商户编号：</label>
+            		<input type="text" id="merchantId" name="merchantId" class="input number easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,11]'" autoQuery="false" />	
+            	</span>	
+            	<span class="property">
+            		<label class="label" for="mctOrderNo">商户订单号码：</label>
+            		<input type="text" id="mctOrderNo" name="mctOrderNo" class="input text easyui-validatebox-disable" style="width:100px" data-options="validType:'text[1,127]'" autoQuery="false" />	
+            	</span>	
+                <a href="javascript:void(0)" id="btnSearch" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:false,disabled:false">查询</a>
+            </form>
+        </div>
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table id="orders"></table>
+        </div>
+
+		 <#include "/WEB-INF/head/head_js.htm" >
+        <script type="text/javascript">
+            function getOrders() {
+                var f = $('#orderQuery');
+            	if (f.form('validate') == false) {
+            		return false;
+            	}
+                var queryParams = f.domain('collect');
+                $("#btnSearch").linkbutton("disable");
+                var t = $('#orders');
+                if(typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                	var toolbar = $.fn.domain.defaults.datagrid.toolbar;
+                	t.domain('datagrid', {
+                        //title: '订单',
+                    	url: '${requestContext.contextPath}/management/order/page',
+                    	queryParams: queryParams,
+                    	toolbar: toolbar,
+                        columns: [[
+	                    	{field: 'id', title: '标识', width: 100, sortable: true, align: 'right', hidden: true}
+	                    	,{field: 'orderNo', title: '订单号码', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'businessId', title: '业务ID', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'amount', title: '订单金额', width: 100, sortable: true, align: 'right', hidden: false, formatter: function(value) { return $.modifiers.formatNumber(value, 2); }}
+	                    	,{field: 'currency', title: '币种', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'createdTime', title: '创建日期', width: 100, sortable: true, align: 'left', hidden: false, formatter: function(value) { return $.modifiers.formatDatetime(value, 'yyyy-MM-dd'); }}
+	                    	,{field: 'paidManner', title: '支付方式', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'orderType', title: '订单类型', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'payStatus', title: '支付状态', width: 100, sortable: true, align: 'left', hidden: false, formatter: formatPayStatus}
+	                    	,{field: 'settlementStatus', title: '清算状态', width: 100, sortable: true, align: 'left', hidden: false, formatter: formatSettlementStatus}
+	                    	,{field: 'processStatus', title: '处理状态', width: 100, sortable: true, align: 'left', hidden: false, formatter: formatProcessStatus}
+	                    	,{field: 'version', title: '版本', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'merchantId', title: '商户编号', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'mctOrderNo', title: '商户订单号码', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'remark', title: '备注', width: 100, sortable: true, align: 'left', hidden: false}
+	                    	,{field: 'channelId', title: '通道ID', width: 100, sortable: true, align: 'right', hidden: false}
+	                    	,{field: 'paidTime', title: '支付时间', width: 100, sortable: true, align: 'left', hidden: false, formatter: function(value) { return $.modifiers.formatDatetime(value, 'yyyy-MM-dd'); }}
+	                    ]],
+                        onLoadSuccess: function(data, status, XHR) {
+                            $("#btnSearch").linkbutton("enable");
+                            var box = $('#orderQuery').find(':input[name][value!=""]:visible:last');
+                            if(box.length == 0) {
+                                box = $('#orderQuery').find(':input[name]:visible:first');
+                            }
+                            box.focus().select();
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                            $("#btnSearch").linkbutton("enable");
+                        },
+                        names: [
+	                    ],
+	                    subject: '订单'
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+            }
+							
+			function formatPayStatus(value, row, index, text) {
+        		if(text && text != value) {
+					return text;
+				}
+        		text = value;
+                var items = [{"value":1,"text":"成功"},{"value":2,"text":"未成功"}];
+                for(var i = 0; i < items.length; i++) {
+                    if(items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+        	}				
+							
+			function formatSettlementStatus(value, row, index, text) {
+        		if(text && text != value) {
+					return text;
+				}
+        		text = value;
+                var items = [{"value":1,"text":"已清算"},{"value":2,"text":"未清算"}];
+                for(var i = 0; i < items.length; i++) {
+                    if(items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+        	}				
+							
+			function formatProcessStatus(value, row, index, text) {
+        		if(text && text != value) {
+					return text;
+				}
+        		text = value;
+                var items = [{"value":1,"text":"已处理"},{"value":2,"text":"未处理"}];
+                for(var i = 0; i < items.length; i++) {
+                    if(items[i].value == value) {
+                        text = items[i].text;
+                        break;
+                    }
+                }
+                return text;
+        	}				
+        	
+        	$(function(){
+        		//解析页面
+                $.parser.parse();
+                //显示隐藏页面
+                $('body').css({ visibility: 'visible' });
+                var t = $('#orderQuery');
+                //装载表单
+                t.domain('load', {});
+                $("#btnSearch")[0].onclick = getOrders;
+                //移除顶端遮罩
+                if (top.hideMask) top.hideMask();
+                //加载数据
+                if($.fn.domain.defaults.datagrid.auto) getOrders();
+            });
+        </script>
+    </body>
+</html>

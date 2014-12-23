@@ -1,0 +1,116 @@
+<!--
+        * @作者 work
+        * @创建时间 2013-7-8 11:49:16
+        *
+-->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>REST - ${title}</title>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="${ieVersion}" />
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/themes/${skinName}/base.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/${easyuiSkinName}/easyui.css">
+        <link rel="stylesheet" type="text/css" href="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/themes/icon.css">
+        <script type="text/javascript">
+            //呈现顶端遮罩
+            if (top.showMask)
+                top.showMask();
+        </script>
+    </head>
+    <body class="easyui-layout" style="visibility:hidden">
+        <div data-options="region:'center',border:false" style="padding:0px;">
+            <table class="datagrid"></table>
+        </div>
+
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-${jqueryVersion}.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/jquery.easyui.min.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/plugins/jquery-easyui-${easyuiVersion}/locale/easyui-lang-zh_CN.js"></script>
+        <script type="text/javascript" src="${requestContext.contextPath}/resources/scripts/jquery-domain.js"></script>
+
+        <script type="text/javascript">
+            $(function() {
+                //解析页面
+                $.parser.parse();
+
+                //显示隐藏页面
+                $('body').css({visibility: 'visible'});
+                //移除顶端遮罩
+                if (top.hideMask) {
+                    top.hideMask();
+                }
+                if ($.fn.domain.defaults.datagrid.auto) {
+                    datagrid();
+                }
+            });
+
+            function getQueryParams() {
+                return {};
+            }
+
+            function datagrid() {
+                var queryParams = getQueryParams();
+                if (queryParams == false) {
+                    return;
+                }
+                var t = $('table.datagrid');
+                if (typeof($.data(t[0], 'datagrid')) == 'undefined') {
+                    t.domain('datagrid', {
+                        title: 'REST服务',
+                        url: '${requestContext.contextPath}/rest/list',
+                        queryParams: queryParams,
+                        toolbar: "",
+                        frozenColumns: "",
+                        nowrap: false,
+                        pagination: false,
+                        fitColumns: false,
+                        singleSelect: true,
+                        striped : false,
+                        columns: [[
+                                {field: 'service', title: '服务', width: 150, sortable: true, align: 'left', hidden: false},
+                                {field: 'method', title: '名称', width: 120, sortable: true, align: 'left', hidden: false},
+                                {field: 'type', title: 'HTTP方法', width: 100, sortable: true, align: 'left', hidden: false},
+                                {field: 'url', title: '地址和参数', width: 500, sortable: true, align: 'left', hidden: false, formatter: formatURL}
+                            ]],
+                        onLoadSuccess: function() {
+                            var rows = $(this).datagrid("getRows");
+                            var service = '';
+                            var index = -1;
+                            for (var i = 0; i < rows.length; i++) {
+                                if (service == '') {
+                                    service = rows[i].service;
+                                    index = i;
+                                }
+                                if (rows[i].service != service || i == rows.length - 1) {
+                                    var param = {
+                                        index: index,
+                                        field: "service",
+                                        rowspan: i == rows.length - 1 ? i - index + 1 : i - index
+                                    };
+                                    $(this).datagrid("mergeCells", param);
+                                    index = i;
+                                    service = rows[i].service;
+                                }
+                            }
+                        },
+                        onLoadError: function(XHR, status, errorThrow) {
+                        }
+                    });
+                }
+                else {
+                    t.datagrid("load", queryParams);
+                }
+
+            }
+
+            function formatURL(value, row, index) {
+                var content = "地址：<a href='" + row.url + "' target='_blank'>" + row.url + "</a>" + "<br/>";
+                var params = row.params;
+                for (var i = 0; i < params.length; i++) {
+                    content += "&nbsp;◆&nbsp;参数：" + (params[i] + "<br/>");
+                }
+                return content;
+            }
+        </script>
+    </body>
+</html>

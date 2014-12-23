@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+        * T_AUDIT ( ) SQL映射文件
+        * 
+        * @作者 work
+        * @创建时间 2013-06-19 15:36:44
+        *
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gz91pay.base.dao.face.management.IAuditDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" flushInterval="3600000" />     
+    <resultMap id="resultMap" type="com.gz91pay.base.domain.management.Audit">
+        <result column="ID" property="id" jdbcType="INTEGER" />      
+        <result column="TBL" property="tbl" jdbcType="VARCHAR" />      
+        <result column="KEY" property="key" jdbcType="INTEGER" />      
+        <result column="OPERATION" property="operation" jdbcType="VARCHAR" />      
+        <result column="WHO" property="who" jdbcType="VARCHAR" />      
+        <result column="WHEN" property="when" jdbcType="TIMESTAMP" />      
+    </resultMap>
+    <sql id="columns" >
+        "ID",
+        "TBL",
+        "KEY",
+        "OPERATION",
+        "WHO",
+        "WHEN"
+    </sql>
+    <!-- 模糊查询 -->
+    <sql id="whrClauseLike">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="tbl != null and tbl != ''">
+            and UPPER("TBL") like '%' || UPPER(#{tbl,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="fixTbl != null and fixTbl != ''">
+            and UPPER("TBL") = UPPER(#{fixTbl,jdbcType=VARCHAR})
+        </if>
+        <if test="key != null and key > -1">
+            and "KEY" = #{key,jdbcType=INTEGER}
+        </if>
+        <if test="operation != null and operation != ''">
+            and UPPER("OPERATION") like '%' || UPPER(#{operation,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="who != null and who != ''">
+            and UPPER("WHO") like '%' || UPPER(#{who,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="when != null and when != ''">
+            and "WHEN" = #{when,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="when_from != null and when != ''">
+            and "WHEN" >= #{when_from,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="when_to != null and when != ''">
+          <![CDATA[and "WHEN" <= #{when_to,jdbcType=TIMESTAMP}]]>
+        </if>	
+    </sql>
+    <sql id="whrClauseLikeMore">
+        <if test="id_ != null">
+            and 
+            <foreach collection="id_" index="index" item="item" open="(" separator=" or " close=")">
+                "ID" = #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="tbl_ != null">
+            and
+            <foreach collection="tbl_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("TBL") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="key_ != null">
+            and 
+            <foreach collection="key_" index="index" item="item" open="(" separator=" or " close=")">
+                "KEY" = #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="operation_ != null">
+            and
+            <foreach collection="operation_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("OPERATION") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="who_ != null">
+            and
+            <foreach collection="who_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("WHO") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="when_ != null">
+            <foreach collection="when_" index="index" item="item" open="" separator="" close="">
+                <if test="item != null and item != '' and index == 0">
+                    and "WHEN" &gt;= #{item,jdbcType=TIMESTAMP}
+                </if>
+                <if test="item != null and item != '' and index == 1">
+                    and "WHEN" &lt;= #{item,jdbcType=TIMESTAMP}
+                </if>
+            </foreach>
+        </if>	
+    </sql>
+    <!-- 精确查询 -->
+    <sql id="whrClauseEqual">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="tbl != null and tbl != ''">
+            and UPPER("TBL") = UPPER(#{tbl,jdbcType=VARCHAR})
+        </if>
+        <if test="key != null and key > -1">
+            and "KEY" = #{key,jdbcType=INTEGER}
+        </if>
+        <if test="operation != null and operation != ''">
+            and UPPER("OPERATION") = UPPER(#{operation,jdbcType=VARCHAR})
+        </if>
+        <if test="who != null and who != ''">
+            and UPPER("WHO") = UPPER(#{who,jdbcType=VARCHAR})
+        </if>
+        <if test="when != null and when != ''">
+            and "WHEN" = #{when,jdbcType=TIMESTAMP}
+        </if>	
+    </sql>
+    <sql id="whrClauseEqualMore">
+        <if test="id_ != null">
+            and 
+            <foreach collection="id_" index="index" item="item" open="(" separator=" or " close=")">
+                "ID" = #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="tbl_ != null">
+            and 
+            <foreach collection="tbl_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("TBL") = UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="key_ != null">
+            and 
+            <foreach collection="key_" index="index" item="item" open="(" separator=" or " close=")">
+                "KEY" =  #{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="operation_ != null">
+            and 
+            <foreach collection="operation_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("OPERATION") = UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="who_ != null">
+            and 
+            <foreach collection="who_" index="index" item="item" open="(" separator=" or " close=")">
+                UPPER("WHO") =  UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="when_ != null">
+            <foreach collection="when_" index="index" item="item" open="" separator="" close="">
+                <if test="item != null and item != '' and index == 0">
+                    and "WHEN" &gt;= #{item,jdbcType=TIMESTAMP}
+                </if>
+                <if test="item != null and item != '' and index == 1">
+                    and "WHEN" &lt;= #{item,jdbcType=TIMESTAMP}
+                </if>
+            </foreach>
+        </if>	
+    </sql>
+    <sql id="orderByClause">
+        <choose>
+            <when test="sort != null and sort != ''">
+                order by ${sort} <if test="order != null and order != ''">${order}</if>
+            </when>
+            <otherwise>
+                order by "ID" asc
+            </otherwise>
+        </choose>
+    </sql>
+    <!--SElECT查询语句-->
+    <select id="count" parameterType="Map" resultType="java.lang.Integer">
+        select count(ID)
+        from  T_AUDIT  
+        where 1=1
+        <include refid="whrClauseLike" />
+        <include refid="whrClauseLikeMore" />
+    </select>
+    <select id="page" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_AUDIT  
+        where 1=1
+        <include refid="whrClauseLike" />    
+        <include refid="whrClauseLikeMore" />         
+        <include refid="orderByClause" />
+    </select>
+    <select id="find" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_AUDIT 
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+        <include refid="orderByClause" />
+    </select>
+    <select id="generatePosition" parameterType="Map" resultType="java.lang.Integer">
+        select case when max(POSITION) is not null then max(POSITION) + 10 else 10 end as POSITION
+        from  T_AUDIT  
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </select>
+    <select id="load" parameterType="java.lang.Integer" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_AUDIT  
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <!--INSERT/UPDATE/DELETE 执行语句-->
+    <insert id="insert" parameterType="com.gz91pay.base.domain.management.Audit">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select SEQ_COMMON.nextVal from dual
+        </selectKey>
+        insert into 
+        T_AUDIT 
+        (
+        "ID",
+        "TBL",
+        "KEY",
+        "OPERATION",
+        "WHO",
+        "WHEN"
+        )
+        values 
+        (
+        #{id,jdbcType=INTEGER},
+        #{tbl,jdbcType=VARCHAR},
+        #{key,jdbcType=INTEGER},
+        #{operation,jdbcType=VARCHAR},
+        #{who,jdbcType=VARCHAR},
+        #{when,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="update" parameterType="com.gz91pay.base.domain.management.Audit">
+        update T_AUDIT
+        <set>
+            <if test="tbl != null">
+                "TBL"=#{tbl,jdbcType=VARCHAR},
+            </if>
+            <if test="key != null">
+                "KEY"=#{key,jdbcType=INTEGER},
+            </if>
+            <if test="operation != null">
+                "OPERATION"=#{operation,jdbcType=VARCHAR},
+            </if>
+            <if test="who != null">
+                "WHO"=#{who,jdbcType=VARCHAR},
+            </if>
+            <if test="when != null">
+                "WHEN"=#{when,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="deletes" parameterType="Map" >
+        delete from T_AUDIT
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </delete>
+</mapper>

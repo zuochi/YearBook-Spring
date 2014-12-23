@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration PUBLIC "-//APACHE//DTD LOG4J 1.2//EN" "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+
+    <!--控制台-->
+    <appender name="console" class="org.apache.log4j.ConsoleAppender">
+        <param name="Target" value="System.out" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%d] %p (%c:%L)- %m%n" />
+        </layout>
+    </appender>
+        
+    <!--全部日志-->
+    <appender name="all" class="org.apache.log4j.DailyRollingFileAppender">       
+        <param name="File" value="logs/all.log" />  
+        <param name="Append" value="true" />    
+        <param name="Encoding" value="UTF-8" />       
+        <layout class="org.apache.log4j.PatternLayout">    
+            <param name="ConversionPattern" value="%d %p (%c:%L)- %m%n" />    
+        </layout>    
+    </appender>
+   
+    <!--调试日志-->
+    <appender name="debug" class="org.apache.log4j.DailyRollingFileAppender">       
+        <param name="File" value="logs/debug.log" />  
+        <param name="Append" value="true" />    
+        <param name="Encoding" value="UTF-8" />   
+        <layout class="org.apache.log4j.PatternLayout">    
+            <param name="ConversionPattern" value="%d %p (%c:%L)- %m%n" />    
+        </layout>    
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="DEBUG" />
+            <param name="LevelMax" value="DEBUG" />
+        </filter>
+    </appender>
+   
+    <!--错误日志-->
+    <appender name="error" class="org.apache.log4j.DailyRollingFileAppender">       
+        <param name="File" value="logs/error.log" />  
+        <param name="Append" value="true" />    
+        <param name="Encoding" value="UTF-8" />    
+        <layout class="org.apache.log4j.PatternLayout">    
+            <param name="ConversionPattern" value="%d %p (%c:%L)- %m%n" />    
+        </layout>    
+        <filter class="org.apache.log4j.varia.LevelRangeFilter">
+            <param name="LevelMin" value="ERROR" />
+            <param name="LevelMax" value="ERROR" />
+        </filter>
+    </appender>
+    
+    <!--Mybatis日志-->
+    <appender name="dao" class="org.apache.log4j.DailyRollingFileAppender">       
+        <param name="File" value="logs/mybatis.log" />  
+        <param name="Append" value="true" />    
+        <param name="Encoding" value="UTF-8" />    
+        <layout class="org.apache.log4j.PatternLayout">    
+            <param name="ConversionPattern" value="%d %p (%c:%L)- %m%n" />    
+        </layout>    
+    </appender>
+    
+    <!--Spring日志-->
+    <appender name="spring" class="org.apache.log4j.DailyRollingFileAppender">       
+        <param name="File" value="logs/spring.log" />  
+        <param name="Append" value="true" />    
+        <param name="Encoding" value="UTF-8" />    
+        <layout class="org.apache.log4j.PatternLayout">    
+            <param name="ConversionPattern" value="%d %p (%c:%L)- %m%n" />    
+        </layout>    
+    </appender>
+    
+    <!--系统日志-->
+    <appender name="jdbc" class="com.gz91pay.base.common.log.SystemLogAppender">       
+        <param name="bufferSize" value="1" />    
+        <param name="insertSql" value="INSERT INTO T_LOG (ID, CATEGORY, THREAD, GRADE, LOGGER, SOURCE, MESSAGE, RESULT, TRACE, URL, WHEN, WHO, WHAT, SUCCESS, PARAMETER) VALUES (SEQ_COMMON.nextVal,?,?,?,?,?,?,?,?,?,?,?,?,?,?)" />    
+    </appender>
+    
+    <!--Mybatis-->
+    <logger name="org.apache.ibatis">
+        <level value="error" />
+        <appender-ref ref="dao"/>
+    </logger>
+    <logger name="java.sql">
+        <level value="error" /><!--配置等级为debug即可输出sql语句-->
+        <appender-ref ref="dao"/>
+    </logger>
+	
+    <!-- Spring -->
+    <logger name="org.springframework">
+        <level value="error" />
+        <appender-ref ref="spring"/>
+    </logger>
+	
+    <!-- Root Logger -->
+    <root>
+        <level value="info" />
+        <appender-ref ref="console" />
+        <appender-ref ref="all" />
+        <appender-ref ref="debug" />
+        <appender-ref ref="error" />
+        <!--Feature:系统日志
+        <appender-ref ref="jdbc" />--><!--去掉这行可屏蔽系统日志功能-->
+    </root>
+	
+</log4j:configuration>

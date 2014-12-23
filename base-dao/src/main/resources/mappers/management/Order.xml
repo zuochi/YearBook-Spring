@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+       	* T_ORDER (订单) SQL映射文件
+       	* 
+       	* @作者 陈开敏
+       	* @创建时间 2014-05-23 10:04:41
+       	*
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gz91pay.payment.dao.face.management.IOrderDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" flushInterval="3600000" />     
+    <resultMap id="resultMap" type="com.gz91pay.payment.domain.management.Order">
+        <result column="ID" property="id" jdbcType="INTEGER" />      
+        <result column="ORDER_NO" property="orderNo" jdbcType="VARCHAR" />      
+        <result column="BUSINESS_ID" property="businessId" jdbcType="INTEGER" />      
+        <result column="AMOUNT" property="amount" jdbcType="DOUBLE" />      
+        <result column="CURRENCY" property="currency" jdbcType="VARCHAR" />      
+        <result column="CREATED_TIME" property="createdTime" jdbcType="TIMESTAMP" />      
+        <result column="PAID_MANNER" property="paidManner" jdbcType="VARCHAR" />      
+        <result column="ORDER_TYPE" property="orderType" jdbcType="INTEGER" />      
+        <result column="PAY_STATUS" property="payStatus" jdbcType="INTEGER" />      
+        <result column="SETTLEMENT_STATUS" property="settlementStatus" jdbcType="INTEGER" />      
+        <result column="PROCESS_STATUS" property="processStatus" jdbcType="INTEGER" />      
+        <result column="VERSION" property="version" jdbcType="INTEGER" />      
+        <result column="MERCHANT_ID" property="merchantId" jdbcType="INTEGER" />      
+        <result column="MCT_ORDER_NO" property="mctOrderNo" jdbcType="VARCHAR" />      
+        <result column="REMARK" property="remark" jdbcType="VARCHAR" />      
+        <result column="CHANNEL_ID" property="channelId" jdbcType="INTEGER" />      
+        <result column="PAID_TIME" property="paidTime" jdbcType="TIMESTAMP" />      
+    </resultMap>
+    <sql id="columns" >
+        "ID",
+        "ORDER_NO",
+        "BUSINESS_ID",
+        "AMOUNT",
+        "CURRENCY",
+        "CREATED_TIME",
+        "PAID_MANNER",
+        "ORDER_TYPE",
+        "PAY_STATUS",
+        "SETTLEMENT_STATUS",
+        "PROCESS_STATUS",
+        "VERSION",
+        "MERCHANT_ID",
+        "MCT_ORDER_NO",
+        "REMARK",
+        "CHANNEL_ID",
+        "PAID_TIME"
+    </sql>
+    <!-- 模糊查询 -->
+    <sql id="whrClauseLike">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            and UPPER("ORDER_NO") like '%' || UPPER(#{orderNo,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="businessId != null and businessId > -1">
+            and "BUSINESS_ID" = #{businessId,jdbcType=INTEGER}
+        </if>
+        <if test="amount != null and amount > -1">
+            and "AMOUNT" = #{amount,jdbcType=DOUBLE}
+        </if>
+        <if test="currency != null and currency != ''">
+            and UPPER("CURRENCY") like '%' || UPPER(#{currency,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="createdTime != null and createdTime != ''">
+            and "CREATED_TIME" = #{createdTime,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="paidManner != null and paidManner != ''">
+            and UPPER("PAID_MANNER") like '%' || UPPER(#{paidManner,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="orderType != null and orderType > -1">
+            and "ORDER_TYPE" = #{orderType,jdbcType=INTEGER}
+        </if>
+        <if test="payStatus != null and payStatus > -1">
+            and "PAY_STATUS" = #{payStatus,jdbcType=INTEGER}
+        </if>
+        <if test="settlementStatus != null and settlementStatus > -1">
+            and "SETTLEMENT_STATUS" = #{settlementStatus,jdbcType=INTEGER}
+        </if>
+        <if test="processStatus != null and processStatus > -1">
+            and "PROCESS_STATUS" = #{processStatus,jdbcType=INTEGER}
+        </if>
+        <if test="version != null and version > -1">
+            and "VERSION" = #{version,jdbcType=INTEGER}
+        </if>
+        <if test="merchantId != null and merchantId > -1">
+            and "MERCHANT_ID" = #{merchantId,jdbcType=INTEGER}
+        </if>
+        <if test="mctOrderNo != null and mctOrderNo != ''">
+            and UPPER("MCT_ORDER_NO") like '%' || UPPER(#{mctOrderNo,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="remark != null and remark != ''">
+            and UPPER("REMARK") like '%' || UPPER(#{remark,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="channelId != null and channelId > -1">
+            and "CHANNEL_ID" = #{channelId,jdbcType=INTEGER}
+        </if>
+        <if test="paidTime != null and paidTime != ''">
+            and "PAID_TIME" = #{paidTime,jdbcType=TIMESTAMP}
+        </if>	
+    </sql>
+    <sql id="whrClauseLikeMore">
+        <if test="id_ != null">
+        	and "ID" in
+        	<foreach collection="id_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="orderNo_ != null">
+        	and
+            <foreach collection="orderNo_" index="index" item="item" open="(" separator=" or " close=")">
+            	UPPER("ORDER_NO") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="businessId_ != null">
+        	and "BUSINESS_ID" in
+        	<foreach collection="businessId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="amount_ != null">
+        	and "AMOUNT" in
+        	<foreach collection="amount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="currency_ != null">
+        	and
+            <foreach collection="currency_" index="index" item="item" open="(" separator=" or " close=")">
+            	UPPER("CURRENCY") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="createdTime_ != null">
+            <foreach collection="createdTime_" index="index" item="item" open="" separator="" close="">
+            	<if test="item != null and item != '' and index == 0">
+            		and "CREATED_TIME" &gt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            	<if test="item != null and item != '' and index == 1">
+            		and "CREATED_TIME" &lt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            </foreach>
+        </if>	
+        <if test="paidManner_ != null">
+        	and
+            <foreach collection="paidManner_" index="index" item="item" open="(" separator=" or " close=")">
+            	UPPER("PAID_MANNER") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="orderType_ != null">
+        	and "ORDER_TYPE" in
+        	<foreach collection="orderType_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="payStatus_ != null">
+        	and "PAY_STATUS" in
+        	<foreach collection="payStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="settlementStatus_ != null">
+        	and "SETTLEMENT_STATUS" in
+        	<foreach collection="settlementStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="processStatus_ != null">
+        	and "PROCESS_STATUS" in
+        	<foreach collection="processStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="version_ != null">
+        	and "VERSION" in
+        	<foreach collection="version_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="merchantId_ != null">
+        	and "MERCHANT_ID" in
+        	<foreach collection="merchantId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="mctOrderNo_ != null">
+        	and
+            <foreach collection="mctOrderNo_" index="index" item="item" open="(" separator=" or " close=")">
+            	UPPER("MCT_ORDER_NO") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="remark_ != null">
+        	and
+            <foreach collection="remark_" index="index" item="item" open="(" separator=" or " close=")">
+            	UPPER("REMARK") like '%' || UPPER(#{item,jdbcType=VARCHAR}) || '%'
+            </foreach>
+        </if>
+        <if test="channelId_ != null">
+        	and "CHANNEL_ID" in
+        	<foreach collection="channelId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="paidTime_ != null">
+            <foreach collection="paidTime_" index="index" item="item" open="" separator="" close="">
+            	<if test="item != null and item != '' and index == 0">
+            		and "PAID_TIME" &gt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            	<if test="item != null and item != '' and index == 1">
+            		and "PAID_TIME" &lt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            </foreach>
+        </if>	
+    </sql>
+    <!-- 精确查询 -->
+    <sql id="whrClauseEqual">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="orderNo != null and orderNo != ''">
+            and UPPER("ORDER_NO") = UPPER(#{orderNo,jdbcType=VARCHAR})
+        </if>
+        <if test="businessId != null and businessId > -1">
+            and "BUSINESS_ID" = #{businessId,jdbcType=INTEGER}
+        </if>
+        <if test="amount != null and amount > -1">
+            and "AMOUNT" = #{amount,jdbcType=DOUBLE}
+        </if>
+        <if test="currency != null and currency != ''">
+            and UPPER("CURRENCY") = UPPER(#{currency,jdbcType=VARCHAR})
+        </if>
+        <if test="createdTime != null and createdTime != ''">
+            and "CREATED_TIME" = #{createdTime,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="paidManner != null and paidManner != ''">
+            and UPPER("PAID_MANNER") = UPPER(#{paidManner,jdbcType=VARCHAR})
+        </if>
+        <if test="orderType != null and orderType > -1">
+            and "ORDER_TYPE" = #{orderType,jdbcType=INTEGER}
+        </if>
+        <if test="payStatus != null and payStatus > -1">
+            and "PAY_STATUS" = #{payStatus,jdbcType=INTEGER}
+        </if>
+        <if test="settlementStatus != null and settlementStatus > -1">
+            and "SETTLEMENT_STATUS" = #{settlementStatus,jdbcType=INTEGER}
+        </if>
+        <if test="processStatus != null and processStatus > -1">
+            and "PROCESS_STATUS" = #{processStatus,jdbcType=INTEGER}
+        </if>
+        <if test="version != null and version > -1">
+            and "VERSION" = #{version,jdbcType=INTEGER}
+        </if>
+        <if test="merchantId != null and merchantId > -1">
+            and "MERCHANT_ID" = #{merchantId,jdbcType=INTEGER}
+        </if>
+        <if test="mctOrderNo != null and mctOrderNo != ''">
+            and UPPER("MCT_ORDER_NO") = UPPER(#{mctOrderNo,jdbcType=VARCHAR})
+        </if>
+        <if test="remark != null and remark != ''">
+            and UPPER("REMARK") = UPPER(#{remark,jdbcType=VARCHAR})
+        </if>
+        <if test="channelId != null and channelId > -1">
+            and "CHANNEL_ID" = #{channelId,jdbcType=INTEGER}
+        </if>
+        <if test="paidTime != null and paidTime != ''">
+            and "PAID_TIME" = #{paidTime,jdbcType=TIMESTAMP}
+        </if>	
+    </sql>
+    <sql id="whrClauseEqualMore">
+        <if test="id_ != null">
+        	and "ID" in
+        	<foreach collection="id_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="orderNo_ != null">
+        	and UPPER("ORDER_NO") in
+            <foreach collection="orderNo_" index="index" item="item" open="(" separator="," close=")">
+            	UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="businessId_ != null">
+        	and "BUSINESS_ID" in
+        	<foreach collection="businessId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="amount_ != null">
+        	and "AMOUNT" in
+        	<foreach collection="amount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="currency_ != null">
+        	and UPPER("CURRENCY") in
+            <foreach collection="currency_" index="index" item="item" open="(" separator="," close=")">
+            	UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="createdTime_ != null">
+        	<foreach collection="createdTime_" index="index" item="item" open="" separator="" close="">
+            	<if test="item != null and item != '' and index == 0">
+            		and "CREATED_TIME" &gt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            	<if test="item != null and item != '' and index == 1">
+            		and "CREATED_TIME" &lt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            </foreach>
+        </if>	
+        <if test="paidManner_ != null">
+        	and UPPER("PAID_MANNER") in
+            <foreach collection="paidManner_" index="index" item="item" open="(" separator="," close=")">
+            	UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="orderType_ != null">
+        	and "ORDER_TYPE" in
+        	<foreach collection="orderType_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="payStatus_ != null">
+        	and "PAY_STATUS" in
+        	<foreach collection="payStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="settlementStatus_ != null">
+        	and "SETTLEMENT_STATUS" in
+        	<foreach collection="settlementStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="processStatus_ != null">
+        	and "PROCESS_STATUS" in
+        	<foreach collection="processStatus_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="version_ != null">
+        	and "VERSION" in
+        	<foreach collection="version_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="merchantId_ != null">
+        	and "MERCHANT_ID" in
+        	<foreach collection="merchantId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="mctOrderNo_ != null">
+        	and UPPER("MCT_ORDER_NO") in
+            <foreach collection="mctOrderNo_" index="index" item="item" open="(" separator="," close=")">
+            	UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="remark_ != null">
+        	and UPPER("REMARK") in
+            <foreach collection="remark_" index="index" item="item" open="(" separator="," close=")">
+            	UPPER(#{item,jdbcType=VARCHAR})
+            </foreach>
+        </if>
+        <if test="channelId_ != null">
+        	and "CHANNEL_ID" in
+        	<foreach collection="channelId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="paidTime_ != null">
+        	<foreach collection="paidTime_" index="index" item="item" open="" separator="" close="">
+            	<if test="item != null and item != '' and index == 0">
+            		and "PAID_TIME" &gt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            	<if test="item != null and item != '' and index == 1">
+            		and "PAID_TIME" &lt;= #{item,jdbcType=TIMESTAMP}
+            	</if>
+            </foreach>
+        </if>	
+    </sql>
+    <sql id="orderByClause">
+    	<choose>
+        	<when test="sort != null and sort != ''">
+        		order by ${sort} <if test="order != null and order != ''">${order}</if>
+        	</when>
+        	<otherwise>
+        		order by "ID" asc
+        	</otherwise>
+        </choose>
+    </sql>
+    <!--SElECT查询语句-->
+    <select id="count" parameterType="Map" resultType="java.lang.Integer">
+        select count(ID)
+        from  T_ORDER  
+        where 1=1
+        <include refid="whrClauseLike" />
+        <include refid="whrClauseLikeMore" />
+    </select>
+    <select id="page" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ORDER  
+        where 1=1
+        <include refid="whrClauseLike" />    
+        <include refid="whrClauseLikeMore" />         
+        <include refid="orderByClause" />
+    </select>
+    <select id="find" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ORDER 
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+        <include refid="orderByClause" />
+    </select>
+    <select id="generatePosition" parameterType="Map" resultType="java.lang.Integer">
+        select case when max(POSITION) is not null then max(POSITION) + 10 else 10 end as POSITION
+        from  T_ORDER  
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </select>
+    <select id="load" parameterType="java.lang.Integer" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ORDER  
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <!--INSERT/UPDATE/DELETE 执行语句-->
+    <insert id="insert" parameterType="com.gz91pay.payment.domain.management.Order">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select SEQ_PAYMENT.nextVal from dual
+        </selectKey>
+        insert into 
+        T_ORDER 
+        (
+        "ID",
+        "ORDER_NO",
+        "BUSINESS_ID",
+        "AMOUNT",
+        "CURRENCY",
+        "CREATED_TIME",
+        "PAID_MANNER",
+        "ORDER_TYPE",
+        "PAY_STATUS",
+        "SETTLEMENT_STATUS",
+        "PROCESS_STATUS",
+        "VERSION",
+        "MERCHANT_ID",
+        "MCT_ORDER_NO",
+        "REMARK",
+        "CHANNEL_ID",
+        "PAID_TIME"
+        )
+        values 
+        (
+        #{id,jdbcType=INTEGER},
+        #{orderNo,jdbcType=VARCHAR},
+        #{businessId,jdbcType=INTEGER},
+        #{amount,jdbcType=DOUBLE},
+        #{currency,jdbcType=VARCHAR},
+        #{createdTime,jdbcType=TIMESTAMP},
+        #{paidManner,jdbcType=VARCHAR},
+        #{orderType,jdbcType=INTEGER},
+        #{payStatus,jdbcType=INTEGER},
+        #{settlementStatus,jdbcType=INTEGER},
+        #{processStatus,jdbcType=INTEGER},
+        #{version,jdbcType=INTEGER},
+        #{merchantId,jdbcType=INTEGER},
+        #{mctOrderNo,jdbcType=VARCHAR},
+        #{remark,jdbcType=VARCHAR},
+        #{channelId,jdbcType=INTEGER},
+        #{paidTime,jdbcType=TIMESTAMP}
+        )
+    </insert>
+    <update id="update" parameterType="com.gz91pay.payment.domain.management.Order">
+        update T_ORDER
+        <set>
+	        <if test="orderNo != null">
+	        	"ORDER_NO"=#{orderNo,jdbcType=VARCHAR},
+	        </if>
+	        <if test="businessId != null">
+	        	"BUSINESS_ID"=#{businessId,jdbcType=INTEGER},
+	        </if>
+	        <if test="amount != null">
+	        	"AMOUNT"=#{amount,jdbcType=DOUBLE},
+	        </if>
+	        <if test="currency != null">
+	        	"CURRENCY"=#{currency,jdbcType=VARCHAR},
+	        </if>
+	        <if test="createdTime != null">
+	        	"CREATED_TIME"=#{createdTime,jdbcType=TIMESTAMP},
+	        </if>
+	        <if test="paidManner != null">
+	        	"PAID_MANNER"=#{paidManner,jdbcType=VARCHAR},
+	        </if>
+	        <if test="orderType != null">
+	        	"ORDER_TYPE"=#{orderType,jdbcType=INTEGER},
+	        </if>
+	        <if test="payStatus != null">
+	        	"PAY_STATUS"=#{payStatus,jdbcType=INTEGER},
+	        </if>
+	        <if test="settlementStatus != null">
+	        	"SETTLEMENT_STATUS"=#{settlementStatus,jdbcType=INTEGER},
+	        </if>
+	        <if test="processStatus != null">
+	        	"PROCESS_STATUS"=#{processStatus,jdbcType=INTEGER},
+	        </if>
+	        <if test="version != null">
+	        	"VERSION"=#{version,jdbcType=INTEGER},
+	        </if>
+	        <if test="merchantId != null">
+	        	"MERCHANT_ID"=#{merchantId,jdbcType=INTEGER},
+	        </if>
+	        <if test="mctOrderNo != null">
+	        	"MCT_ORDER_NO"=#{mctOrderNo,jdbcType=VARCHAR},
+	        </if>
+	        <if test="remark != null">
+	        	"REMARK"=#{remark,jdbcType=VARCHAR},
+	        </if>
+	        <if test="channelId != null">
+	        	"CHANNEL_ID"=#{channelId,jdbcType=INTEGER},
+	        </if>
+	        <if test="paidTime != null">
+	        	"PAID_TIME"=#{paidTime,jdbcType=TIMESTAMP},
+	        </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="deletes" parameterType="Map" >
+        delete from T_ORDER
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </delete>
+</mapper>

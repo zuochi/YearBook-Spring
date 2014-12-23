@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+       xsi:schemaLocation="
+	http://www.springframework.org/schema/beans classpath:org/springframework/beans/factory/xml/spring-beans-3.1.xsd
+	http://www.springframework.org/schema/context classpath:org/springframework/context/config/spring-context-3.1.xsd
+        http://www.springframework.org/schema/mvc classpath:org/springframework/web/servlet/config/spring-mvc-3.1.xsd
+	http://www.springframework.org/schema/tx classpath:org/springframework/transaction/config/spring-tx-3.1.xsd
+	http://www.springframework.org/schema/aop classpath:org/springframework/aop/config/spring-aop-3.1.xsd
+	http://www.springframework.org/schema/task classpath:org/springframework/scheduling/config/spring-task-3.1.xsd
+        http://www.springframework.org/schema/security classpath:org/springframework/security/config/spring-security-3.1.xsd   
+        http://www.springframework.org/schema/jdbc classpath:org/springframework/jdbc/config/spring-jdbc-3.1.xsd">
+
+    <description>Base Spring MVC ConfigLocation</description>
+   
+    <!--属性配置-->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath*:jdbc.properties</value>
+                <value>classpath*:config.properties</value>
+            </list>
+        </property>
+    </bean>
+	
+    <!--开始：Mybatis配置-->
+    <!--数据源配置,使用应用内的DBCP数据库连接池-->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <!--Connection Info-->
+        <property name="driverClassName" value="${jdbc.driver}" />
+        <property name="url" value="${jdbc.url}" />
+        <property name="username" value="${jdbc.username}" />
+        <property name="password" value="${jdbc.password}" />
+        <!--Connection Pooling Info-->
+        <property name="initialSize" value="5" />
+        <property name="maxActive" value="100" />
+        <property name="maxIdle" value="30" />
+        <property name="maxWait" value="500" />
+        <property name="poolPreparedStatements" value="false" />
+        <property name="defaultAutoCommit" value="false" />
+    </bean>
+    <!--审计拦截器-->
+    <bean id="auditInterceptor" class="com.school.base.dao.mybatis.interceptor.audit.AuditInterceptor"></bean>  
+    <!--分页拦截器-->
+    <bean id="paginationInterceptor" class="com.school.base.dao.mybatis.PaginationInterceptor"></bean>  
+    <!--Mybatis配置-->
+    <!--分页拦截器-->
+    <bean id="validatorInteceptor" class="com.school.base.dao.mybatis.interceptor.ValidatorInteceptor"></bean>  
+    <!--Mybatis配置-->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+        <property name="typeAliasesPackage" value="com.school.yearbook.domain" />
+        <property name="mapperLocations" value="classpath:mappers/**/*.xml" />
+        <property name="plugins">  
+            <list>
+                <!--Feature:实体类验证-->
+                <ref bean="validatorInteceptor"/>  
+                <!--Feature:审计信息
+                <ref bean="auditInterceptor"/>-->  <!--去掉这行可屏蔽审计功能-->
+                <!--Feature:物理分页-->
+                <ref bean="paginationInterceptor"/>  
+            </list>
+        </property>  
+    </bean>
+    
+    <!--开始：Spring IOC容器配置-->
+    <!--启用注解配置-->
+    <context:annotation-config />
+    <!--对被注释为@Controller,@Service,@Repository,@Component的类进行扫描，以完成Bean创建的功能-->
+    <context:component-scan base-package="com.school" use-default-filters="true" />
+    <!--结束：Spring IOC配置-->
+	
+    <!--开始：服务层配置-->
+    <!--事务管理器配置,单数据源事务-->
+    <tx:annotation-driven transaction-manager="transactionManager" />  
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    <!--任务配置-->
+    <task:executor id="myExecutor" pool-size="10" />
+    <task:scheduler id="myScheduler" pool-size="10" />
+    <task:annotation-driven executor="myExecutor"  scheduler="myScheduler"/>
+    <!--验证器配置-->
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+    <!--服务层拦截器配置-->
+    <bean id="logInterceptor" class="com.school.base.common.log.LogInterceptor">
+       <!--  <property name="actionLogHandler" ref="logDatabaseHandler" /> --><!--去掉这行可屏蔽日志功能-->
+    </bean>
+    <bean id="beanNameAutoProxyCreator"
+          class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames">
+            <list>
+                <value>*Controller</value>
+                <value>*ServiceImpl</value>
+            </list>
+        </property>
+        <property name="interceptorNames">
+            <list>
+                <value>logInterceptor</value>
+                <value>uploadInterceptor</value>
+            </list>
+        </property>
+    </bean>
+    <!--结束：服务层配置-->
+    
+    <!--开始：SpringMVC配置-->
+    <!--默认处理-->
+    <mvc:default-servlet-handler/>
+    <!--资源文件-->
+    <mvc:resources location="/resources/" mapping="/resources/**" />
+    <!--Enables the Spring MVC @Controller programming model-->
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <bean class="org.springframework.http.converter.StringHttpMessageConverter">
+                <property name="supportedMediaTypes" value = "text/plain;charset=UTF-8" />
+            </bean>
+            <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">
+                <property name="objectMapper" ref="jacksonObjectMapper" />
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+    <bean id="jacksonObjectMapper" class="org.codehaus.jackson.map.ObjectMapper">
+        <property name="dateFormat" ref="dateFormat" />
+    </bean>
+    <bean id="dateFormat" class="java.text.SimpleDateFormat">
+        <constructor-arg>
+            <value>yyyy-MM-dd HH:mm:ss</value>
+        </constructor-arg>
+    </bean>
+    <!--freemarker配置-->
+    <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value=""/>
+        <property name="defaultEncoding" value="UTF-8" />
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="number_format">#.##</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="cache" value="true"/>
+        <property name="prefix" value="/WEB-INF/"/>
+        <property name="suffix" value=".html"/>
+        <property name="contentType" value="text/html;charset=UTF-8" />
+        <!--if you want to use the Spring FreeMarker macros, set this property to true-->
+        <property name="exposeSpringMacroHelpers" value="true"/>
+        <property name="requestContextAttribute" value="requestContext" />
+        <property name="attributes">
+            <props>
+                <prop key="title">YearBook</prop>
+                <prop key="ieVersion">IE=8,9,10</prop>
+                <prop key="jqueryVersion">1.8.0</prop>
+                <prop key="easyuiVersion">1.3.2</prop>
+                <prop key="easyuiSkinName">default</prop>
+                <prop key="skinName">default</prop>
+            </props>
+        </property>
+    </bean>
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="1000000000"/>
+    </bean>
+    <!--结束：SpringMVC配置-->
+
+    <!--开始：安全配置-->
+    <security:global-method-security pre-post-annotations="enabled" />
+    <!--资源文件-->
+    <security:http security="none" pattern="/**/resources/**" />
+    <security:http security="none" pattern="/**/scripts/**" />
+    <security:http security="none" pattern="/**/*.js" />
+    <security:http security="none" pattern="/**/css/**" />
+    <security:http security="none" pattern="/**/images/**" />
+    <!--Web服务-->
+    <security:http security="none" pattern="/ws" />
+    <security:http security="none" pattern="/ws/*" />
+    <!--REST服务-->
+    <security:http security="none" pattern="/rest" />
+    <security:http security="none" pattern="/rest/**" />
+    <!--验证规则-->
+    <security:http auto-config="false" use-expressions="true" entry-point-ref="loginUrlAuthenticationEntryPoint">
+        <security:logout logout-url="/account/logout" logout-success-url="/account/login" />
+        <security:custom-filter ref="loginAuthenticationFilter" position="FORM_LOGIN_FILTER" />
+        <security:custom-filter ref="securityFilter" before="FILTER_SECURITY_INTERCEPTOR" />
+        <security:access-denied-handler ref="accessDeniedHandler" />
+    </security:http>
+    <!--登录验证配置-->
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="securityUseDetailsService" />
+    </security:authentication-manager>
+    <bean id="loginUrlAuthenticationEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+        <property name="loginFormUrl" value="/account/login" />
+    </bean>
+    <bean id="loginAuthenticationFilter" class="com.school.base.common.security.LoginAuthenticationFilter">
+        <property name="filterProcessesUrl" value="/account/logon"></property>
+        <property name="authenticationManager" ref="securityUseDetailsService" />
+        <property name="authenticationFailureHandler" ref="failureHandler" />
+        <property name="authenticationSuccessHandler" ref="successHandler" />
+    </bean>
+    <bean id="successHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler">
+        <property name="targetUrlParameter" value="targetUrl" />
+        <property name="defaultTargetUrl" value="/home/index" />
+    </bean>
+    <bean id="failureHandler" class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
+        <property name="defaultFailureUrl" value="/account/login?error=1" />
+    </bean>
+    <bean id="securityUseDetailsService" class="com.school.base.common.security.SecurityUserDetailsService" />
+    <!--权限验证配置-->
+    <bean id="contextService" class="com.school.base.security.ContextService"></bean>
+    <bean id="privilegeProvider" class="com.school.base.security.PrivilegeProvider"></bean>
+    <bean id="securityFilter" class="com.school.base.common.security.SecurityFilter">
+        <property name="authenticationManager" ref="securityUseDetailsService" />
+        <property name="securityMetadataSource" ref="securityInvokeMetadataSource" />
+        <property name="accessDecisionManager" ref="securityAccessDecisionManager" />
+        <property name="loginFormUrl" value="/account/login" />
+        <property name="ingoredTargetUrls">
+            <list>
+                <value>/</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="securityAccessDecisionManager" class="com.school.base.common.security.SecurityAccessDecisionManager" />
+    <bean id="securityInvokeMetadataSource" class="com.school.base.common.security.SecurityInvokeMetadataSource" />
+    <bean id="accessDeniedHandler" class="org.springframework.security.web.access.AccessDeniedHandlerImpl">
+        <property name="errorPage" value="/error/403" />
+    </bean>
+    <!--结束：安全配置-->
+    
+    <!--开始：WebService配置-->
+    <import resource="webservice-context.xml" />
+    <!--结束：WebService配置-->
+    
+</beans>

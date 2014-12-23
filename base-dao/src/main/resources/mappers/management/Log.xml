@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+        * T_LOG (日志) SQL映射文件
+        * 
+        * @作者 work
+        * @创建时间 2012-12-11 14:58:32
+        *
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gz91pay.base.dao.face.management.ILogDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" flushInterval="3600000" />     
+    <resultMap id="resultMap" type="com.gz91pay.base.domain.management.Log">
+        <result column="ID" property="id" jdbcType="INTEGER" />      
+        <result column="CATEGORY" property="category" jdbcType="INTEGER" />      
+        <result column="WHEN" property="when" jdbcType="TIMESTAMP" />      
+        <result column="SOURCE" property="source" jdbcType="VARCHAR" />      
+        <result column="WHO" property="who" jdbcType="VARCHAR" />      
+        <result column="WHAT" property="what" jdbcType="VARCHAR" />      
+        <result column="URL" property="url" jdbcType="VARCHAR" />      
+        <result column="PARAMETER" property="parameter" jdbcType="CLOB" />      
+        <result column="RESULT" property="result" jdbcType="CLOB" />      
+        <result column="SUCCESS" property="success" jdbcType="INTEGER" />      
+        <result column="MESSAGE" property="message" jdbcType="VARCHAR" />      
+        <result column="THREAD" property="thread" jdbcType="VARCHAR" />      
+        <result column="LOGGER" property="logger" jdbcType="VARCHAR" />      
+        <result column="GRADE" property="grade" jdbcType="VARCHAR" />      
+        <result column="TRACE" property="trace" jdbcType="CLOB" />      
+    </resultMap>
+    <sql id="columns" >
+        "ID",
+        "CATEGORY",
+        "WHEN",
+        "SOURCE",
+        "WHO",
+        "WHAT",
+        "URL",
+        "PARAMETER",
+        "RESULT",
+        "SUCCESS",
+        "MESSAGE",
+        "THREAD",
+        "LOGGER",
+        "GRADE",
+        "TRACE"
+    </sql>
+    <!-- 模糊查询 -->
+    <sql id="whrClauseLike">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="category != null and category > -1">
+            and "CATEGORY" = #{category,jdbcType=INTEGER}
+        </if>
+        <if test="when != null and when != ''">
+            and "WHEN" = #{when,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="from != null and from != ''">
+          <![CDATA[ and "WHEN" >= #{from,jdbcType=TIMESTAMP} ]]>
+        </if>	
+        <if test="to != null and to != ''">
+          <![CDATA[ and "WHEN" <= #{to,jdbcType=TIMESTAMP} ]]>
+        </if>	
+        <if test="source != null and source != ''">
+            and UPPER("SOURCE") like '%' || UPPER(#{source,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="who != null and who != ''">
+            and UPPER("WHO") like '%' || UPPER(#{who,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="what != null and what != ''">
+            and UPPER("WHAT") like '%' || UPPER(#{what,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="url != null and url != ''">
+            and UPPER("URL") like '%' || UPPER(#{url,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="parameter != null and parameter != ''">
+            and UPPER("PARAMETER") like '%' || UPPER(#{parameter,jdbcType=CLOB}) || '%'
+        </if>
+        <if test="result != null and result != ''">
+            and UPPER("RESULT") like '%' || UPPER(#{result,jdbcType=CLOB}) || '%'
+        </if>
+        <if test="success != null and success > -1">
+            and "SUCCESS" = #{success,jdbcType=INTEGER}
+        </if>
+        <if test="message != null and message != ''">
+            and UPPER("MESSAGE") like '%' || UPPER(#{message,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="thread != null and thread != ''">
+            and UPPER("THREAD") like '%' || UPPER(#{thread,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="logger != null and logger != ''">
+            and UPPER("LOGGER") like '%' || UPPER(#{logger,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="grade != null and grade != ''">
+            and UPPER("GRADE") like '%' || UPPER(#{grade,jdbcType=VARCHAR}) || '%'
+        </if>
+        <if test="trace != null and trace != ''">
+            and UPPER("TRACE") like '%' || UPPER(#{trace,jdbcType=CLOB}) || '%'
+        </if>
+        <if test="each != null">
+            <foreach item="i" collection="each" open="and (" close=")" separator="or">
+                <trim prefix="(" suffix=")">
+                    1=1
+                    <if test="i.id != null and i.id > -1">
+                        and "ID" = #{i.id,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.category != null and i.category > -1">
+                        and "CATEGORY" = #{i.category,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.when != null and i.when != ''">
+                        and "WHEN" = #{i.when,jdbcType=TIMESTAMP}
+                    </if>	
+                    <if test="i.source != null and i.source != ''">
+                        and UPPER("SOURCE") like '%' || UPPER(#{i.source,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.who != null and i.who != ''">
+                        and UPPER("WHO") like '%' || UPPER(#{i.who,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.what != null and i.what != ''">
+                        and UPPER("WHAT") like '%' || UPPER(#{i.what,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.url != null and i.url != ''">
+                        and UPPER("URL") like '%' || UPPER(#{i.url,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.parameter != null and i.parameter != ''">
+                        and UPPER("PARAMETER") like '%' || UPPER(#{i.parameter,jdbcType=CLOB}) || '%'
+                    </if>
+                    <if test="i.result != null and i.result != ''">
+                        and UPPER("RESULT") like '%' || UPPER(#{i.result,jdbcType=CLOB}) || '%'
+                    </if>
+                    <if test="i.success != null and i.success > -1">
+                        and "SUCCESS" = #{i.success,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.message != null and i.message != ''">
+                        and UPPER("MESSAGE") like '%' || UPPER(#{i.message,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.thread != null and i.thread != ''">
+                        and UPPER("THREAD") like '%' || UPPER(#{i.thread,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.logger != null and i.logger != ''">
+                        and UPPER("LOGGER") like '%' || UPPER(#{i.logger,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.grade != null and i.grade != ''">
+                        and UPPER("GRADE") like '%' || UPPER(#{i.grade,jdbcType=VARCHAR}) || '%'
+                    </if>
+                    <if test="i.trace != null and i.trace != ''">
+                        and UPPER("TRACE") like '%' || UPPER(#{i.trace,jdbcType=CLOB}) || '%'
+                    </if>
+                </trim>
+            </foreach>
+        </if>
+    </sql>
+    <!-- 精确查询 -->
+    <sql id="whrClauseEqual">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="category != null and category > -1">
+            and "CATEGORY" = #{category,jdbcType=INTEGER}
+        </if>
+        <if test="when != null and when != ''">
+            and "WHEN" = #{when,jdbcType=TIMESTAMP}
+        </if>	
+        <if test="source != null and source != ''">
+            and UPPER("SOURCE") = UPPER(#{source,jdbcType=VARCHAR})
+        </if>
+        <if test="who != null and who != ''">
+            and UPPER("WHO") = UPPER(#{who,jdbcType=VARCHAR})
+        </if>
+        <if test="what != null and what != ''">
+            and UPPER("WHAT") = UPPER(#{what,jdbcType=VARCHAR})
+        </if>
+        <if test="url != null and url != ''">
+            and UPPER("URL") = UPPER(#{url,jdbcType=VARCHAR})
+        </if>
+        <if test="parameter != null and parameter != ''">
+            and UPPER("PARAMETER") = UPPER(#{parameter,jdbcType=CLOB})
+        </if>
+        <if test="result != null and result != ''">
+            and UPPER("RESULT") = UPPER(#{result,jdbcType=CLOB})
+        </if>
+        <if test="success != null and success > -1">
+            and "SUCCESS" = #{success,jdbcType=INTEGER}
+        </if>
+        <if test="message != null and message != ''">
+            and UPPER("MESSAGE") = UPPER(#{message,jdbcType=VARCHAR})
+        </if>
+        <if test="thread != null and thread != ''">
+            and UPPER("THREAD") = UPPER(#{thread,jdbcType=VARCHAR})
+        </if>
+        <if test="logger != null and logger != ''">
+            and UPPER("LOGGER") = UPPER(#{logger,jdbcType=VARCHAR})
+        </if>
+        <if test="grade != null and grade != ''">
+            and UPPER("GRADE") = UPPER(#{grade,jdbcType=VARCHAR})
+        </if>
+        <if test="trace != null and trace != ''">
+            and UPPER("TRACE") = UPPER(#{trace,jdbcType=CLOB})
+        </if>
+        <if test="each != null">
+            <foreach item="i" collection="each" open="and (" close=")" separator="or">
+                <trim prefix="(" suffix=")">
+                    1=1
+                    <if test="i.id != null and i.id > -1">
+                        and "ID" = #{i.id,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.category != null and i.category > -1">
+                        and "CATEGORY" = #{i.category,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.when != null and i.when != ''">
+                        and "WHEN" = #{i.when,jdbcType=TIMESTAMP}
+                    </if>	
+                    <if test="i.source != null and i.source != ''">
+                        and UPPER("SOURCE") = UPPER(#{i.source,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.who != null and i.who != ''">
+                        and UPPER("WHO") = UPPER(#{i.who,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.what != null and i.what != ''">
+                        and UPPER("WHAT") = UPPER(#{i.what,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.url != null and i.url != ''">
+                        and UPPER("URL") = UPPER(#{i.url,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.parameter != null and i.parameter != ''">
+                        and UPPER("PARAMETER") = UPPER(#{i.parameter,jdbcType=CLOB})
+                    </if>
+                    <if test="i.result != null and i.result != ''">
+                        and UPPER("RESULT") = UPPER(#{i.result,jdbcType=CLOB})
+                    </if>
+                    <if test="i.success != null and i.success > -1">
+                        and "SUCCESS" = #{i.success,jdbcType=INTEGER}
+                    </if>
+                    <if test="i.message != null and i.message != ''">
+                        and UPPER("MESSAGE") = UPPER(#{i.message,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.thread != null and i.thread != ''">
+                        and UPPER("THREAD") = UPPER(#{i.thread,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.logger != null and i.logger != ''">
+                        and UPPER("LOGGER") = UPPER(#{i.logger,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.grade != null and i.grade != ''">
+                        and UPPER("GRADE") = UPPER(#{i.grade,jdbcType=VARCHAR})
+                    </if>
+                    <if test="i.trace != null and i.trace != ''">
+                        and UPPER("TRACE") = UPPER(#{i.trace,jdbcType=CLOB})
+                    </if>
+                </trim>
+            </foreach>
+        </if>
+    </sql>
+    <sql id="orderByClause">
+        <choose>
+            <when test="sort != null and sort != ''">
+                order by ${sort} <if test="order != null and order != ''">${order}</if>
+            </when>
+            <otherwise>
+                order by "ID" asc
+            </otherwise>
+        </choose>
+    </sql>
+    <!--SElECT查询语句-->
+    <select id="count" parameterType="Map" resultType="java.lang.Integer">
+        select count(ID)
+        from  T_LOG  
+        where 1=1
+        <include refid="whrClauseLike" />
+    </select>
+    <select id="page" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_LOG  
+        where 1=1
+        <include refid="whrClauseLike" />             
+        <include refid="orderByClause" />
+    </select>
+    <select id="find" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_LOG 
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="orderByClause" />
+    </select>
+    <select id="generatePosition" parameterType="Map" resultType="java.lang.Integer">
+        select case when max(POSITION) is not null then max(POSITION) + 10 else 10 end as POSITION
+        from  T_LOG  
+        where 1=1
+        <include refid="whrClauseEqual" />
+    </select>
+    <select id="load" parameterType="java.lang.Integer" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_LOG  
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <!--INSERT/UPDATE/DELETE 执行语句-->
+    <insert id="insert" parameterType="com.gz91pay.base.domain.management.Log">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select SEQ_COMMON.nextVal from dual
+        </selectKey>
+        insert into 
+        T_LOG 
+        (
+        "ID",
+        "CATEGORY",
+        "WHEN",
+        "SOURCE",
+        "WHO",
+        "WHAT",
+        "URL",
+        "PARAMETER",
+        "RESULT",
+        "SUCCESS",
+        "MESSAGE",
+        "THREAD",
+        "LOGGER",
+        "GRADE",
+        "TRACE"
+        )
+        values 
+        (
+        #{id,jdbcType=INTEGER},
+        #{category,jdbcType=INTEGER},
+        #{when,jdbcType=TIMESTAMP},
+        #{source,jdbcType=VARCHAR},
+        #{who,jdbcType=VARCHAR},
+        #{what,jdbcType=VARCHAR},
+        #{url,jdbcType=VARCHAR},
+        #{parameter,jdbcType=CLOB},
+        #{result,jdbcType=CLOB},
+        #{success,jdbcType=INTEGER},
+        #{message,jdbcType=VARCHAR},
+        #{thread,jdbcType=VARCHAR},
+        #{logger,jdbcType=VARCHAR},
+        #{grade,jdbcType=VARCHAR},
+        #{trace,jdbcType=CLOB}
+        )
+    </insert>
+    <update id="update" parameterType="com.gz91pay.base.domain.management.Log">
+        update T_LOG
+        <set>
+            <if test="category != null">
+                "CATEGORY"=#{category,jdbcType=INTEGER},
+            </if>
+            <if test="when != null">
+                "WHEN"=#{when,jdbcType=TIMESTAMP},
+            </if>
+            <if test="source != null">
+                "SOURCE"=#{source,jdbcType=VARCHAR},
+            </if>
+            <if test="who != null">
+                "WHO"=#{who,jdbcType=VARCHAR},
+            </if>
+            <if test="what != null">
+                "WHAT"=#{what,jdbcType=VARCHAR},
+            </if>
+            <if test="url != null">
+                "URL"=#{url,jdbcType=VARCHAR},
+            </if>
+            <if test="parameter != null">
+                "PARAMETER"=#{parameter,jdbcType=CLOB},
+            </if>
+            <if test="result != null">
+                "RESULT"=#{result,jdbcType=CLOB},
+            </if>
+            <if test="success != null">
+                "SUCCESS"=#{success,jdbcType=INTEGER},
+            </if>
+            <if test="message != null">
+                "MESSAGE"=#{message,jdbcType=VARCHAR},
+            </if>
+            <if test="thread != null">
+                "THREAD"=#{thread,jdbcType=VARCHAR},
+            </if>
+            <if test="logger != null">
+                "LOGGER"=#{logger,jdbcType=VARCHAR},
+            </if>
+            <if test="grade != null">
+                "GRADE"=#{grade,jdbcType=VARCHAR},
+            </if>
+            <if test="trace != null">
+                "TRACE"=#{trace,jdbcType=CLOB},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="deletes" parameterType="Map" >
+        delete from T_LOG
+        where 1=1
+        <include refid="whrClauseEqual" />
+    </delete>
+</mapper>

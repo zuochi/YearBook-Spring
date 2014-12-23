@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+       	* T_ACCOUNT (帐户) SQL映射文件
+       	* 
+       	* @作者 陈开敏
+       	* @创建时间 2014-05-23 10:04:07
+       	*
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gz91pay.payment.dao.face.management.IAccountDao">
+    <cache type="org.mybatis.caches.ehcache.LoggingEhcache" flushInterval="3600000" />     
+    <resultMap id="resultMap" type="com.gz91pay.payment.domain.management.Account">
+        <result column="ID" property="id" jdbcType="INTEGER" />      
+        <result column="AMOUNT" property="amount" jdbcType="DOUBLE" />      
+        <result column="AVAILABLE_AMOUNT" property="availableAmount" jdbcType="DOUBLE" />      
+        <result column="PROCESSING_AMOUNT" property="processingAmount" jdbcType="DOUBLE" />      
+        <result column="TYPE" property="type" jdbcType="INTEGER" />      
+        <result column="VERSION" property="version" jdbcType="INTEGER" />      
+        <result column="MERCHANT_ID" property="merchantId" jdbcType="INTEGER" />      
+    </resultMap>
+    <sql id="columns" >
+        "ID",
+        "AMOUNT",
+        "AVAILABLE_AMOUNT",
+        "PROCESSING_AMOUNT",
+        "TYPE",
+        "VERSION",
+        "MERCHANT_ID"
+    </sql>
+    <!-- 模糊查询 -->
+    <sql id="whrClauseLike">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="amount != null and amount > -1">
+            and "AMOUNT" = #{amount,jdbcType=DOUBLE}
+        </if>
+        <if test="availableAmount != null and availableAmount > -1">
+            and "AVAILABLE_AMOUNT" = #{availableAmount,jdbcType=DOUBLE}
+        </if>
+        <if test="processingAmount != null and processingAmount > -1">
+            and "PROCESSING_AMOUNT" = #{processingAmount,jdbcType=DOUBLE}
+        </if>
+        <if test="type != null and type > -1">
+            and "TYPE" = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="version != null and version > -1">
+            and "VERSION" = #{version,jdbcType=INTEGER}
+        </if>
+        <if test="merchantId != null and merchantId > -1">
+            and "MERCHANT_ID" = #{merchantId,jdbcType=INTEGER}
+        </if>
+    </sql>
+    <sql id="whrClauseLikeMore">
+        <if test="id_ != null">
+        	and "ID" in
+        	<foreach collection="id_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="amount_ != null">
+        	and "AMOUNT" in
+        	<foreach collection="amount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="availableAmount_ != null">
+        	and "AVAILABLE_AMOUNT" in
+        	<foreach collection="availableAmount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="processingAmount_ != null">
+        	and "PROCESSING_AMOUNT" in
+        	<foreach collection="processingAmount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="type_ != null">
+        	and "TYPE" in
+        	<foreach collection="type_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="version_ != null">
+        	and "VERSION" in
+        	<foreach collection="version_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="merchantId_ != null">
+        	and "MERCHANT_ID" in
+        	<foreach collection="merchantId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+    </sql>
+    <!-- 精确查询 -->
+    <sql id="whrClauseEqual">
+        <if test="id != null and id > -1">
+            and "ID" = #{id,jdbcType=INTEGER}
+        </if>
+        <if test="amount != null and amount > -1">
+            and "AMOUNT" = #{amount,jdbcType=DOUBLE}
+        </if>
+        <if test="availableAmount != null and availableAmount > -1">
+            and "AVAILABLE_AMOUNT" = #{availableAmount,jdbcType=DOUBLE}
+        </if>
+        <if test="processingAmount != null and processingAmount > -1">
+            and "PROCESSING_AMOUNT" = #{processingAmount,jdbcType=DOUBLE}
+        </if>
+        <if test="type != null and type > -1">
+            and "TYPE" = #{type,jdbcType=INTEGER}
+        </if>
+        <if test="version != null and version > -1">
+            and "VERSION" = #{version,jdbcType=INTEGER}
+        </if>
+        <if test="merchantId != null and merchantId > -1">
+            and "MERCHANT_ID" = #{merchantId,jdbcType=INTEGER}
+        </if>
+    </sql>
+    <sql id="whrClauseEqualMore">
+        <if test="id_ != null">
+        	and "ID" in
+        	<foreach collection="id_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="amount_ != null">
+        	and "AMOUNT" in
+        	<foreach collection="amount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="availableAmount_ != null">
+        	and "AVAILABLE_AMOUNT" in
+        	<foreach collection="availableAmount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="processingAmount_ != null">
+        	and "PROCESSING_AMOUNT" in
+        	<foreach collection="processingAmount_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=DOUBLE}
+            </foreach>
+        </if>
+        <if test="type_ != null">
+        	and "TYPE" in
+        	<foreach collection="type_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="version_ != null">
+        	and "VERSION" in
+        	<foreach collection="version_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+        <if test="merchantId_ != null">
+        	and "MERCHANT_ID" in
+        	<foreach collection="merchantId_" index="index" item="item" open="(" separator="," close=")">
+            	#{item,jdbcType=INTEGER}
+            </foreach>
+        </if>
+    </sql>
+    <sql id="orderByClause">
+    	<choose>
+        	<when test="sort != null and sort != ''">
+        		order by ${sort} <if test="order != null and order != ''">${order}</if>
+        	</when>
+        	<otherwise>
+        		order by "ID" asc
+        	</otherwise>
+        </choose>
+    </sql>
+    <!--SElECT查询语句-->
+    <select id="count" parameterType="Map" resultType="java.lang.Integer">
+        select count(ID)
+        from  T_ACCOUNT  
+        where 1=1
+        <include refid="whrClauseLike" />
+        <include refid="whrClauseLikeMore" />
+    </select>
+    <select id="page" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ACCOUNT  
+        where 1=1
+        <include refid="whrClauseLike" />    
+        <include refid="whrClauseLikeMore" />         
+        <include refid="orderByClause" />
+    </select>
+    <select id="find" parameterType="Map" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ACCOUNT 
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+        <include refid="orderByClause" />
+    </select>
+    <select id="generatePosition" parameterType="Map" resultType="java.lang.Integer">
+        select case when max(POSITION) is not null then max(POSITION) + 10 else 10 end as POSITION
+        from  T_ACCOUNT  
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </select>
+    <select id="load" parameterType="java.lang.Integer" resultMap="resultMap">
+        select 
+        <include refid="columns" />
+        from  T_ACCOUNT  
+        where ID = #{id,jdbcType=INTEGER}
+    </select>
+    <!--INSERT/UPDATE/DELETE 执行语句-->
+    <insert id="insert" parameterType="com.gz91pay.payment.domain.management.Account">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select SEQ_PAYMENT.nextVal from dual
+        </selectKey>
+        insert into 
+        T_ACCOUNT 
+        (
+        "ID",
+        "AMOUNT",
+        "AVAILABLE_AMOUNT",
+        "PROCESSING_AMOUNT",
+        "TYPE",
+        "VERSION",
+        "MERCHANT_ID"
+        )
+        values 
+        (
+        #{id,jdbcType=INTEGER},
+        #{amount,jdbcType=DOUBLE},
+        #{availableAmount,jdbcType=DOUBLE},
+        #{processingAmount,jdbcType=DOUBLE},
+        #{type,jdbcType=INTEGER},
+        #{version,jdbcType=INTEGER},
+        #{merchantId,jdbcType=INTEGER}
+        )
+    </insert>
+    <update id="update" parameterType="com.gz91pay.payment.domain.management.Account">
+        update T_ACCOUNT
+        <set>
+	        <if test="amount != null">
+	        	"AMOUNT"=#{amount,jdbcType=DOUBLE},
+	        </if>
+	        <if test="availableAmount != null">
+	        	"AVAILABLE_AMOUNT"=#{availableAmount,jdbcType=DOUBLE},
+	        </if>
+	        <if test="processingAmount != null">
+	        	"PROCESSING_AMOUNT"=#{processingAmount,jdbcType=DOUBLE},
+	        </if>
+	        <if test="type != null">
+	        	"TYPE"=#{type,jdbcType=INTEGER},
+	        </if>
+	        <if test="version != null">
+	        	"VERSION"=#{version,jdbcType=INTEGER},
+	        </if>
+	        <if test="merchantId != null">
+	        	"MERCHANT_ID"=#{merchantId,jdbcType=INTEGER},
+	        </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+    <delete id="deletes" parameterType="Map" >
+        delete from T_ACCOUNT
+        where 1=1
+        <include refid="whrClauseEqual" />
+        <include refid="whrClauseEqualMore" />
+    </delete>
+</mapper>

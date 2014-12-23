@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.gz91pay.base.dao.face.IDynamicDao">
+    <select id="selectOne" resultType="Map">
+        ${_parameter}
+    </select>
+    <select id="selectList" resultType="Map">
+        ${_parameter}
+    </select>
+    <select id="execute">
+        ${_parameter}
+    </select>
+</mapper>
